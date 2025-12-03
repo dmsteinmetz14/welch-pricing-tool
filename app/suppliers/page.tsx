@@ -9,10 +9,8 @@ export default function SuppliersPage() {
     <div className="space-y-8">
       <div className="space-y-2">
         <p className="text-sm uppercase tracking-wide text-slate-500">Step 3</p>
-        <h1 className="text-3xl font-semibold text-slate-900">Capture supplier markup rules</h1>
-        <p className="text-base text-slate-600">
-          Track locations, default markups, and any special discount or markup agreements in one place.
-        </p>
+        <h1 className="text-3xl font-semibold text-slate-900">Capture supplier logistics</h1>
+        <p className="text-base text-slate-600">Track locations and any additional charges or fees tied to each supplier.</p>
       </div>
       <SupplierForm />
       <section className="space-y-4">
