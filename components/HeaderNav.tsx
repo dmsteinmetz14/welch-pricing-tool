@@ -5,9 +5,10 @@ import type { Route } from 'next';
 import { usePathname } from 'next/navigation';
 
 const links: { href: Route; label: string }[] = [
-  { href: '/input', label: 'Input' },
-  { href: '/price-sheet', label: 'Price Sheet' },
-  { href: '/suppliers', label: 'Suppliers' }
+  { href: '/input', label: 'Flower Input' },
+  { href: '/suppliers', label: 'Supplier Input' },
+  { href: '/supplier-charges', label: 'Supplier Charges' },
+  { href: '/price-sheet', label: 'Price Sheet' }
 ];
 
 export default function HeaderNav() {

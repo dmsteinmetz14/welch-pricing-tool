@@ -5,7 +5,12 @@ import HeaderNav from '@/components/HeaderNav';
 
 export const metadata: Metadata = {
   title: 'Welch Flower Pricing Tool',
-  description: 'Lightweight wholesale flower pricing planner'
+  description: 'Lightweight wholesale flower pricing planner',
+  icons: {
+    icon: '/flower-icon.svg',
+    shortcut: '/flower-icon.svg',
+    apple: '/flower-icon.svg'
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

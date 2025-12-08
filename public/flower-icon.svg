@@ -1,0 +1,27 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="flowerCenter" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffe082" />
+      <stop offset="100%" stop-color="#ffca28" />
+    </radialGradient>
+    <linearGradient id="petalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f48fb1" />
+      <stop offset="100%" stop-color="#f06292" />
+    </linearGradient>
+    <linearGradient id="leafGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a5d6a7" />
+      <stop offset="100%" stop-color="#66bb6a" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" ry="14" fill="#fff3e0" />
+  <g transform="translate(32 28)">
+    <g fill="url(#petalGradient)" stroke="#f06292" stroke-width="1">
+      <ellipse rx="10" ry="16" />
+      <ellipse rx="10" ry="16" transform="rotate(45)" />
+      <ellipse rx="10" ry="16" transform="rotate(90)" />
+      <ellipse rx="10" ry="16" transform="rotate(135)" />
+    </g>
+    <circle r="8" fill="url(#flowerCenter)" stroke="#ffb300" stroke-width="1" />
+  </g>
+  <path d="M32 36 C30 44 28 48 24 54 C30 52 34 49 36 44 C38 49 42 52 48 54 C43 48 41 44 40 36 Z" fill="url(#leafGradient)" stroke="#43a047" stroke-width="1" />
+</svg>

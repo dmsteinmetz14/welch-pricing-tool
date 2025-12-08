@@ -9,7 +9,13 @@ export default function FlowerList() {
 
   const supplierLookup = useMemo(() => {
     const map = new Map<string, string>();
-    suppliers.forEach((supplier) => map.set(supplier.id, supplier.location));
+    suppliers.forEach((supplier) => {
+      const label =
+        supplier.name && supplier.location
+          ? `${supplier.name} — ${supplier.location}`
+          : supplier.name || supplier.location || 'Unassigned supplier';
+      map.set(supplier.id, label);
+    });
     return map;
   }, [suppliers]);
 
@@ -24,8 +30,10 @@ export default function FlowerList() {
           <div>
             <p className="font-medium text-slate-900">{item.name}</p>
             <p className="text-slate-500">
+              {item.flowerType ? `${item.flowerType} · ` : ''}
               {item.quantity} stems · {supplierLookup.get(item.supplierId ?? '') ?? 'Unassigned supplier'}
             </p>
+            {item.date && <p className="text-xs text-slate-400">Date: {item.date}</p>}
           </div>
           <p className="font-medium text-slate-900">{formatCurrency(item.wholesaleCost)}</p>
         </li>
