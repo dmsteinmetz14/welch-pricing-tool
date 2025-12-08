@@ -5,8 +5,22 @@ export interface AdditionalCharge {
 
 export interface Supplier {
   id: string;
+  name: string;
   location: string;
   additionalCharges: AdditionalCharge[];
 }
 
-export type SupplierInput = Omit<Supplier, 'id'>;
+export interface SupplierInput {
+  name: string;
+  location: string;
+}
+
+export interface SupplierCharge {
+  id: string;
+  chargeType: string;
+  description: string;
+  amount: number;
+  date?: string;
+  supplierId?: string;
+  supplierName?: string;
+}
