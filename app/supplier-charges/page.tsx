@@ -3,6 +3,8 @@ import SupplierChargeTable from '@/components/SupplierChargeTable';
 import SupplierChargeForm from '@/components/SupplierChargeForm';
 import { listSuppliers } from '@/lib/suppliers';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SupplierChargesPage() {
   const [charges, suppliers] = await Promise.all([listSupplierCharges(), listSuppliers()]);
 
