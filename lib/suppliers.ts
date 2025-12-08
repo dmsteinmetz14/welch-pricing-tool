@@ -12,21 +12,21 @@ interface SupplierRow {
   Location?: string;
 }
 
-const suppliersTableId = process.env.BASEROW_SUPPLIERS_TABLE_ID;
-
-if (!suppliersTableId) {
-  throw new Error('Missing BASEROW_SUPPLIERS_TABLE_ID environment variable');
+function getSuppliersTablePath() {
+  const tableId = process.env.BASEROW_SUPPLIERS_TABLE_ID;
+  if (!tableId) {
+    throw new Error('Missing BASEROW_SUPPLIERS_TABLE_ID environment variable');
+  }
+  return `/api/database/rows/table/${tableId}/?user_field_names=true`;
 }
 
-const basePath = `/api/database/rows/table/${suppliersTableId}/?user_field_names=true`;
-
 export async function listSuppliers(): Promise<Supplier[]> {
-  const data = await baserowFetch<BaserowListResponse<SupplierRow>>(basePath);
+  const data = await baserowFetch<BaserowListResponse<SupplierRow>>(getSuppliersTablePath());
   return data.results.map(mapRowToSupplier);
 }
 
 export async function createSupplier(payload: { name: string; location: string }): Promise<Supplier> {
-  const row = await baserowFetch<SupplierRow>(`/api/database/rows/table/${suppliersTableId}/?user_field_names=true`, {
+  const row = await baserowFetch<SupplierRow>(getSuppliersTablePath(), {
     method: 'POST',
     body: JSON.stringify({
       Supplier: payload.name,

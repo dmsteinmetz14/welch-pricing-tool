@@ -20,16 +20,16 @@ interface ChargeRow {
   Date?: string;
 }
 
-const chargesTableId = process.env.BASEROW_CHARGES_TABLE_ID;
-
-if (!chargesTableId) {
-  throw new Error('Missing BASEROW_CHARGES_TABLE_ID environment variable');
+function getChargesTablePath() {
+  const tableId = process.env.BASEROW_CHARGES_TABLE_ID;
+  if (!tableId) {
+    throw new Error('Missing BASEROW_CHARGES_TABLE_ID environment variable');
+  }
+  return `/api/database/rows/table/${tableId}/?user_field_names=true`;
 }
 
-const basePath = `/api/database/rows/table/${chargesTableId}/?user_field_names=true`;
-
 export async function listSupplierCharges(): Promise<SupplierCharge[]> {
-  const data = await baserowFetch<BaserowListResponse<ChargeRow>>(basePath);
+  const data = await baserowFetch<BaserowListResponse<ChargeRow>>(getChargesTablePath());
   return data.results.map(mapRowToCharge);
 }
 
@@ -43,7 +43,7 @@ interface CreateChargeInput {
 
 export async function createSupplierCharge(payload: CreateChargeInput): Promise<SupplierCharge> {
   const supplier = payload.supplierId ? Number(payload.supplierId) : undefined;
-  const row = await baserowFetch<ChargeRow>(basePath, {
+  const row = await baserowFetch<ChargeRow>(getChargesTablePath(), {
     method: 'POST',
     body: JSON.stringify({
       'Charge Type': payload.chargeType,

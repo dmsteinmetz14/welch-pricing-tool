@@ -6,11 +6,10 @@ interface BaserowErrorPayload {
 const BASEROW_API_URL = process.env.BASEROW_API_URL ?? 'https://api.baserow.io';
 const BASEROW_TOKEN = process.env.BASEROW_TOKEN;
 
-if (!BASEROW_TOKEN) {
-  throw new Error('Missing BASEROW_TOKEN environment variable');
-}
-
 export async function baserowFetch<TResponse>(path: string, init?: RequestInit): Promise<TResponse> {
+  if (!BASEROW_TOKEN) {
+    throw new Error('Missing BASEROW_TOKEN environment variable');
+  }
   const url = new URL(path, BASEROW_API_URL);
   const headers = new Headers(init?.headers);
   headers.set('Authorization', `Token ${BASEROW_TOKEN}`);

@@ -21,16 +21,16 @@ interface FlowerRow {
   Quantity?: number | string;
 }
 
-const flowersTableId = process.env.BASEROW_FLOWERS_TABLE_ID;
-
-if (!flowersTableId) {
-  throw new Error('Missing BASEROW_FLOWERS_TABLE_ID environment variable');
+function getFlowersTablePath() {
+  const tableId = process.env.BASEROW_FLOWERS_TABLE_ID;
+  if (!tableId) {
+    throw new Error('Missing BASEROW_FLOWERS_TABLE_ID environment variable');
+  }
+  return `/api/database/rows/table/${tableId}/?user_field_names=true`;
 }
 
-const basePath = `/api/database/rows/table/${flowersTableId}/?user_field_names=true`;
-
 export async function listFlowers(): Promise<FlowerItem[]> {
-  const data = await baserowFetch<BaserowListResponse<FlowerRow>>(basePath);
+  const data = await baserowFetch<BaserowListResponse<FlowerRow>>(getFlowersTablePath());
   return data.results.map(mapRowToFlower);
 }
 
@@ -38,7 +38,7 @@ export async function createFlowers(flowers: FlowerInputPayload[]): Promise<Flow
   const created: FlowerItem[] = [];
   for (const flower of flowers) {
     const supplierId = Number(flower.supplierId);
-    const row = await baserowFetch<FlowerRow>(basePath, {
+    const row = await baserowFetch<FlowerRow>(getFlowersTablePath(), {
       method: 'POST',
       body: JSON.stringify({
         'Flower type': flower.flowerType,
