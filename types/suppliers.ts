@@ -23,4 +23,5 @@ export interface SupplierCharge {
   date?: string;
   supplierId?: string;
   supplierName?: string;
+  unitOfCharge?: 'Per Box' | 'Per Shipment';
 }
