@@ -121,6 +121,7 @@ export default function SupplierChargeTable({ charges }: SupplierChargeTableProp
                 <th className="px-4 py-3">Description</th>
                 <th className="px-4 py-3">Supplier</th>
                 <th className="px-4 py-3 text-right">Amount</th>
+                <th className="px-4 py-3">Unit</th>
                 <th className="px-4 py-3">Date</th>
               </tr>
             </thead>
@@ -131,6 +132,7 @@ export default function SupplierChargeTable({ charges }: SupplierChargeTableProp
                   <td className="px-4 py-3">{charge.description || '—'}</td>
                   <td className="px-4 py-3">{charge.supplierName || 'Unassigned'}</td>
                   <td className="px-4 py-3 text-right font-medium text-slate-900">{formatCurrency(charge.amount ?? 0)}</td>
+                  <td className="px-4 py-3">{charge.unitOfCharge || 'Per Box'}</td>
                   <td className="px-4 py-3">{formatChargeDate(charge.date)}</td>
                 </tr>
               ))}

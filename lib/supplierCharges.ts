@@ -18,6 +18,7 @@ interface ChargeRow {
   Supplier?: LinkRowValue[];
   'Charge Amount'?: number | string;
   Date?: string;
+  'Unit of Charge'?: string;
 }
 
 function getChargesTablePath() {
@@ -39,6 +40,7 @@ interface CreateChargeInput {
   amount: number;
   supplierId?: string;
   date: string;
+  unitOfCharge: 'Per Box' | 'Per Shipment';
 }
 
 export async function createSupplierCharge(payload: CreateChargeInput): Promise<SupplierCharge> {
@@ -49,6 +51,7 @@ export async function createSupplierCharge(payload: CreateChargeInput): Promise<
       'Charge Type': payload.chargeType,
       'Charge Description': payload.description,
       'Charge Amount': payload.amount,
+      'Unit of Charge': payload.unitOfCharge,
       Supplier: supplier ? [supplier] : [],
       Date: payload.date
     })
@@ -68,6 +71,7 @@ function mapRowToCharge(row: ChargeRow): SupplierCharge {
     amount,
     date: row.Date ?? undefined,
     supplierId: supplier ? String(supplier.id) : undefined,
-    supplierName: supplier?.value?.trim()
+    supplierName: supplier?.value?.trim(),
+    unitOfCharge: row['Unit of Charge']?.trim() === 'Per Shipment' ? 'Per Shipment' : 'Per Box'
   };
 }

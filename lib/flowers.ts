@@ -19,6 +19,7 @@ interface FlowerRow {
   Date?: string;
   Cost?: number | string;
   Quantity?: number | string;
+  'Unit of Measure'?: string;
 }
 
 function getFlowersTablePath() {
@@ -46,7 +47,8 @@ export async function createFlowers(flowers: FlowerInputPayload[]): Promise<Flow
         Suppliers: Number.isFinite(supplierId) ? [supplierId] : [],
         Date: flower.date,
         Cost: flower.wholesaleCost,
-        Quantity: flower.quantity
+        Quantity: flower.quantity,
+        'Unit of Measure': flower.unitOfMeasure
       })
     });
     created.push(mapRowToFlower(row));
@@ -67,6 +69,7 @@ function mapRowToFlower(row: FlowerRow): FlowerItem {
     quantity: Number.isFinite(quantity) ? quantity : 0,
     wholesaleCost: Number.isFinite(cost) ? cost : 0,
     supplierId: supplier ? String(supplier.id) : undefined,
-    date: row.Date ?? undefined
+    date: row.Date ?? undefined,
+    unitOfMeasure: row['Unit of Measure'] === 'Per Stem' ? 'Per Stem' : 'Per Bunch'
   };
 }
