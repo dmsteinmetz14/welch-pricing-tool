@@ -11,10 +11,16 @@ interface LinkRowValue {
   value?: string;
 }
 
+interface SelectValue {
+  id: number;
+  value?: string;
+  color?: string;
+}
+
 interface ChargeRow {
   id: number;
-  'Charge Type'?: string;
-  'Charge Description'?: string;
+  'Charge Type'?: string | SelectValue | null;
+  'Charge Description'?: string | null;
   Supplier?: LinkRowValue[];
   'Charge Amount'?: number | string;
   Date?: string;
@@ -63,11 +69,21 @@ function mapRowToCharge(row: ChargeRow): SupplierCharge {
   const amount = Number.isFinite(parsedAmount) ? parsedAmount : 0;
   return {
     id: String(row.id),
-    chargeType: row['Charge Type']?.trim() ?? '',
-    description: row['Charge Description']?.trim() ?? '',
+    chargeType: normalizeBaserowString(row['Charge Type']),
+    description: normalizeBaserowString(row['Charge Description']),
     amount,
     date: row.Date ?? undefined,
     supplierId: supplier ? String(supplier.id) : undefined,
     supplierName: supplier?.value?.trim()
   };
+}
+
+function normalizeBaserowString(value?: string | SelectValue | null): string {
+  if (typeof value === 'string') {
+    return value.trim();
+  }
+  if (value && typeof value === 'object') {
+    return value.value?.trim() ?? '';
+  }
+  return '';
 }
