@@ -45,6 +45,9 @@ export async function POST(request: Request) {
     if (!flower.date?.trim()) {
       return NextResponse.json({ error: `Date is required for entry ${index + 1}` }, { status: 400 });
     }
+    if (flower.unitOfMeasure !== 'Per Bunch' && flower.unitOfMeasure !== 'Per Stem') {
+      return NextResponse.json({ error: `Unit of measure is invalid for entry ${index + 1}` }, { status: 400 });
+    }
     if (!Number.isFinite(flower.quantity) || flower.quantity <= 0) {
       return NextResponse.json({ error: `Quantity must be a positive number for entry ${index + 1}` }, { status: 400 });
     }
@@ -60,7 +63,8 @@ export async function POST(request: Request) {
         flowerType: flower.flowerType.trim(),
         name: flower.name.trim(),
         supplierId: flower.supplierId.trim(),
-        date: flower.date.trim()
+        date: flower.date.trim(),
+        unitOfMeasure: flower.unitOfMeasure
       }))
     );
     return NextResponse.json({ flowers: created }, { status: 201 });

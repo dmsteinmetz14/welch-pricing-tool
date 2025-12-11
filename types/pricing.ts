@@ -6,6 +6,7 @@ export interface FlowerItem {
   wholesaleCost: number;
   supplierId?: string;
   date?: string;
+  unitOfMeasure?: 'Per Bunch' | 'Per Stem';
 }
 
 export interface PricedFlowerItem extends FlowerItem {
@@ -21,4 +22,5 @@ export interface FlowerInputPayload {
   wholesaleCost: number;
   supplierId: string;
   date: string;
+  unitOfMeasure: 'Per Bunch' | 'Per Stem';
 }

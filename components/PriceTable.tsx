@@ -33,7 +33,9 @@ export default function PriceTable({ items, totals }: PriceTableProps) {
             <tr key={item.id}>
               <td className="px-4 py-3">
                 <p className="font-medium text-slate-900">{item.name}</p>
-                <p className="text-slate-500">{item.quantity} stems</p>
+                <p className="text-slate-500">
+                  {item.quantity} {item.unitOfMeasure === 'Per Stem' ? 'stems' : item.unitOfMeasure === 'Per Bunch' ? 'bunches' : 'units'}
+                </p>
               </td>
               <td className="px-4 py-3">{formatCurrency(item.wholesaleCost)}</td>
               <td className="px-4 py-3">{formatCurrency(item.stemCost)}</td>

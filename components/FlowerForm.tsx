@@ -18,7 +18,8 @@ const initialDraft = {
   supplierId: '',
   quantity: '',
   wholesaleCost: '',
-  date: today
+  date: today,
+  unitOfMeasure: 'Per Bunch'
 };
 
 export default function FlowerForm() {
@@ -87,6 +88,10 @@ export default function FlowerForm() {
     if (!draft.date.trim()) {
       nextErrors.date = 'Date is required';
     }
+    const normalizedUnit = draft.unitOfMeasure === 'Per Stem' || draft.unitOfMeasure === 'Per Bunch' ? draft.unitOfMeasure : '';
+    if (!normalizedUnit) {
+      nextErrors.unitOfMeasure = 'Unit of measure is required';
+    }
 
     setErrors(nextErrors);
     if (Object.values(nextErrors).some(Boolean)) {
@@ -100,13 +105,15 @@ export default function FlowerForm() {
       supplierId: draft.supplierId,
       quantity: Number(trimmedQuantity),
       wholesaleCost: Number(trimmedCost),
-      date: draft.date
+      date: draft.date,
+      unitOfMeasure: normalizedUnit as 'Per Bunch' | 'Per Stem'
     };
     setPending((prev) => [...prev, pendingFlower]);
     setDraft((prev) => ({
       ...initialDraft,
       flowerTypeOption: addingNewType ? '' : prev.flowerTypeOption,
-      date: prev.date
+      date: prev.date,
+      unitOfMeasure: prev.unitOfMeasure
     }));
     setAddingNewType(false);
     setErrors({});
@@ -203,7 +210,7 @@ export default function FlowerForm() {
             {errors.supplierId && <span className="text-xs text-red-500">{errors.supplierId}</span>}
           </label>
           <InputField
-            label="Quantity (stems)"
+            label="Quantity"
             name="quantity"
             type="number"
             min={1}
@@ -224,6 +231,25 @@ export default function FlowerForm() {
             onChange={(event) => setDraft((prev) => ({ ...prev, wholesaleCost: event.target.value }))}
             error={errors.wholesaleCost}
           />
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="font-medium text-slate-700">Unit of measure</span>
+            <select
+              value={draft.unitOfMeasure}
+              onChange={(event) =>
+                setDraft((prev) => ({
+                  ...prev,
+                  unitOfMeasure: event.target.value === 'Per Stem' ? 'Per Stem' : 'Per Bunch'
+                }))
+              }
+              className={`rounded-md border border-slate-300 px-3 py-2 text-base text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 ${
+                errors.unitOfMeasure ? 'border-red-400 focus:ring-red-200' : ''
+              }`}
+            >
+              <option value="Per Bunch">Per Bunch</option>
+              <option value="Per Stem">Per Stem</option>
+            </select>
+            {errors.unitOfMeasure && <span className="text-xs text-red-500">{errors.unitOfMeasure}</span>}
+          </label>
           <InputField
             label="Date"
             name="date"
@@ -283,10 +309,13 @@ export default function FlowerForm() {
                   return (
                     <tr key={flower.id}>
                       <td className="px-4 py-3 font-medium text-slate-900">{flower.flowerType}</td>
-                      <td className="px-4 py-3">{flower.name}</td>
-                      <td className="px-4 py-3">{supplierLabel}</td>
-                      <td className="px-4 py-3 text-right">{flower.quantity}</td>
-                      <td className="px-4 py-3 text-right">${flower.wholesaleCost.toFixed(2)}</td>
+                  <td className="px-4 py-3">{flower.name}</td>
+                  <td className="px-4 py-3">{supplierLabel}</td>
+                  <td className="px-4 py-3 text-right">
+                    {flower.quantity}{' '}
+                    <span className="text-xs text-slate-500">{flower.unitOfMeasure === 'Per Stem' ? 'stems' : 'bunches'}</span>
+                  </td>
+                  <td className="px-4 py-3 text-right">${flower.wholesaleCost.toFixed(2)}</td>
                       <td className="px-4 py-3">{flower.date}</td>
                       <td className="px-4 py-3">
                         <button type="button" onClick={() => handleRemovePending(flower.id)} className="text-sm font-medium text-slate-500 hover:text-red-500">

@@ -23,12 +23,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Request body must be an object' }, { status: 400 });
   }
 
-  const { chargeType, description, amount, supplierId, date } = body as {
+  const { chargeType, description, amount, supplierId, date, unitOfCharge } = body as {
     chargeType?: unknown;
     description?: unknown;
     amount?: unknown;
     supplierId?: unknown;
     date?: unknown;
+    unitOfCharge?: unknown;
   };
 
   if (typeof chargeType !== 'string' || !chargeType.trim()) {
@@ -47,6 +48,9 @@ export async function POST(request: Request) {
   if (typeof date !== 'string' || !date.trim()) {
     return NextResponse.json({ error: 'Date is required' }, { status: 400 });
   }
+  if (unitOfCharge !== 'Per Box' && unitOfCharge !== 'Per Shipment') {
+    return NextResponse.json({ error: 'Unit of charge is invalid' }, { status: 400 });
+  }
 
   try {
     const charge = await createSupplierCharge({
@@ -54,7 +58,8 @@ export async function POST(request: Request) {
       description: description.trim(),
       amount: parsedAmount,
       supplierId: supplierId.trim(),
-      date: date.trim()
+      date: date.trim(),
+      unitOfCharge
     });
     return NextResponse.json({ charge }, { status: 201 });
   } catch (error) {

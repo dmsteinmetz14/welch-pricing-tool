@@ -15,6 +15,7 @@ interface FieldState {
   supplierId: string;
   amount: string;
   date: string;
+  unitOfCharge: 'Per Box' | 'Per Shipment';
 }
 
 const today = new Date();
@@ -25,7 +26,8 @@ const initialState: FieldState = {
   description: '',
   supplierId: '',
   amount: '',
-  date: defaultDate
+  date: defaultDate,
+  unitOfCharge: 'Per Box'
 };
 
 const initialErrors: Record<keyof FieldState, string | undefined> = {
@@ -33,7 +35,8 @@ const initialErrors: Record<keyof FieldState, string | undefined> = {
   description: undefined,
   supplierId: undefined,
   amount: undefined,
-  date: undefined
+  date: undefined,
+  unitOfCharge: undefined
 };
 
 export default function SupplierChargeForm({ suppliers }: SupplierChargeFormProps) {
@@ -44,8 +47,14 @@ export default function SupplierChargeForm({ suppliers }: SupplierChargeFormProp
   const router = useRouter();
 
   const isDisabled = useMemo(
-    () => isPending || !fields.chargeType.trim() || !fields.supplierId || !fields.amount.trim() || !fields.date.trim(),
-    [fields.chargeType, fields.supplierId, fields.amount, fields.date, isPending]
+    () =>
+      isPending ||
+      !fields.chargeType.trim() ||
+      !fields.supplierId ||
+      !fields.amount.trim() ||
+      !fields.date.trim() ||
+      !fields.unitOfCharge,
+    [fields.chargeType, fields.supplierId, fields.amount, fields.date, fields.unitOfCharge, isPending]
   );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -77,6 +86,9 @@ export default function SupplierChargeForm({ suppliers }: SupplierChargeFormProp
     if (!trimmedDate) {
       nextErrors.date = 'Date is required';
     }
+    if (fields.unitOfCharge !== 'Per Box' && fields.unitOfCharge !== 'Per Shipment') {
+      nextErrors.unitOfCharge = 'Select how this charge applies';
+    }
 
     setErrors(nextErrors);
     if (Object.values(nextErrors).some(Boolean)) {
@@ -96,7 +108,8 @@ export default function SupplierChargeForm({ suppliers }: SupplierChargeFormProp
             description: trimmedDescription,
             supplierId: fields.supplierId,
             amount: Number(trimmedAmount),
-            date: trimmedDate
+            date: trimmedDate,
+            unitOfCharge: fields.unitOfCharge
           })
         });
         const payload = (await response.json()) as { charge?: unknown; error?: string };
@@ -124,7 +137,7 @@ export default function SupplierChargeForm({ suppliers }: SupplierChargeFormProp
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 rounded-lg bg-white p-6 shadow-sm">
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-3">
         <InputField
           label="Charge type"
           name="chargeType"
@@ -150,6 +163,25 @@ export default function SupplierChargeForm({ suppliers }: SupplierChargeFormProp
             ))}
           </select>
           {errors.supplierId && <span className="text-xs text-red-500">{errors.supplierId}</span>}
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="font-medium text-slate-700">Unit of charge</span>
+          <select
+            value={fields.unitOfCharge}
+            onChange={(event) =>
+              setFields((prev) => ({
+                ...prev,
+                unitOfCharge: event.target.value === 'Per Shipment' ? 'Per Shipment' : 'Per Box'
+              }))
+            }
+            className={`rounded-md border border-slate-300 px-3 py-2 text-base text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 ${
+              errors.unitOfCharge ? 'border-red-400 focus:ring-red-200' : ''
+            }`}
+          >
+            <option value="Per Box">Per Box</option>
+            <option value="Per Shipment">Per Shipment</option>
+          </select>
+          {errors.unitOfCharge && <span className="text-xs text-red-500">{errors.unitOfCharge}</span>}
         </label>
       </div>
       <label className="flex flex-col gap-1 text-sm">
