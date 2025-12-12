@@ -4,6 +4,8 @@ import { useMemo, useState } from 'react';
 import { SupplierCharge } from '@/types/suppliers';
 import { formatCurrency } from '@/lib/pricing';
 
+const NO_SUPPLIER_VALUE = '__UNASSIGNED__';
+
 interface SupplierChargeTableProps {
   charges: SupplierCharge[];
 }
@@ -45,10 +47,24 @@ export default function SupplierChargeTable({ charges }: SupplierChargeTableProp
   const defaultEnd = useMemo(() => formatDateInput(getEndOfCurrentWeek()), []);
   const [startDate, setStartDate] = useState(defaultStart);
   const [endDate, setEndDate] = useState(defaultEnd);
+  const [supplierFilter, setSupplierFilter] = useState('');
+
+  const supplierOptions = useMemo(() => {
+    const unique = new Map<string, string>();
+    charges.forEach((charge) => {
+      const value = charge.supplierId ?? NO_SUPPLIER_VALUE;
+      const label = charge.supplierName?.trim() || 'Unassigned';
+      if (!unique.has(value)) {
+        unique.set(value, label);
+      }
+    });
+    return Array.from(unique.entries()).map(([value, label]) => ({ value, label }));
+  }, [charges]);
 
   const filteredCharges = useMemo(() => {
-    const start = startDate ? new Date(`${startDate}T00:00:00`) : null;
-    const end = endDate ? new Date(`${endDate}T23:59:59.999`) : null;
+    const start = startDate ? new Date(`${startDate}T00:00:00.000Z`) : null;
+    const end = endDate ? new Date(`${endDate}T23:59:59.999Z`) : null;
+    const filterValue = supplierFilter || null;
     return charges.filter((charge) => {
       const chargeDate = parseDate(charge.date);
       if (!chargeDate) {
@@ -60,9 +76,15 @@ export default function SupplierChargeTable({ charges }: SupplierChargeTableProp
       if (end && chargeDate > end) {
         return false;
       }
+      if (filterValue) {
+        const value = charge.supplierId ?? NO_SUPPLIER_VALUE;
+        if (value !== filterValue) {
+          return false;
+        }
+      }
       return true;
     });
-  }, [charges, startDate, endDate]);
+  }, [charges, endDate, startDate, supplierFilter]);
 
   const dateFormatter = useMemo(() => new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), []);
   const formatChargeDate = (value?: string) => {
@@ -109,6 +131,21 @@ export default function SupplierChargeTable({ charges }: SupplierChargeTableProp
         <p className="text-sm text-slate-500">
           Showing {filteredCharges.length} of {charges.length} charges
         </p>
+        <label className="flex flex-col text-sm text-slate-600">
+          Supplier
+          <select
+            value={supplierFilter}
+            onChange={(event) => setSupplierFilter(event.target.value)}
+            className="mt-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+          >
+            <option value="">All suppliers</option>
+            {supplierOptions.map((supplier) => (
+              <option key={supplier.value} value={supplier.value}>
+                {supplier.label}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
       {filteredCharges.length === 0 ? (
         <p className="rounded-lg border border-dashed border-slate-200 bg-white p-6 text-sm text-slate-500">No charges match the selected date range.</p>
