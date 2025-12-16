@@ -45,11 +45,12 @@ export async function POST(request: Request) {
     if (!flower.date?.trim()) {
       return NextResponse.json({ error: `Date is required for entry ${index + 1}` }, { status: 400 });
     }
-    if (flower.unitOfMeasure !== 'Per Bunch' && flower.unitOfMeasure !== 'Per Stem') {
-      return NextResponse.json({ error: `Unit of measure is invalid for entry ${index + 1}` }, { status: 400 });
+    const boxes = typeof flower.boxes === 'number' ? flower.boxes : Number(flower.boxes);
+    if (!Number.isInteger(boxes) || boxes <= 0) {
+      return NextResponse.json({ error: `Boxes must be a positive whole number for entry ${index + 1}` }, { status: 400 });
     }
     if (!Number.isFinite(flower.quantity) || flower.quantity <= 0) {
-      return NextResponse.json({ error: `Quantity must be a positive number for entry ${index + 1}` }, { status: 400 });
+      return NextResponse.json({ error: `Units must be a positive number for entry ${index + 1}` }, { status: 400 });
     }
     if (!Number.isFinite(flower.wholesaleCost) || flower.wholesaleCost < 0) {
       return NextResponse.json({ error: `Cost must be a non-negative number for entry ${index + 1}` }, { status: 400 });
@@ -64,7 +65,7 @@ export async function POST(request: Request) {
         name: flower.name.trim(),
         supplierId: flower.supplierId.trim(),
         date: flower.date.trim(),
-        unitOfMeasure: flower.unitOfMeasure
+        boxes: typeof flower.boxes === 'number' ? flower.boxes : Number(flower.boxes)
       }))
     );
     return NextResponse.json({ flowers: created }, { status: 201 });

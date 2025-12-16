@@ -1,9 +1,10 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import InputField from './InputField';
 import { usePricing } from '@/contexts/PricingContext';
 import { FlowerInputPayload } from '@/types/pricing';
+import { Supplier } from '@/types/suppliers';
 
 interface PendingFlower extends FlowerInputPayload {
   id: string;
@@ -11,19 +12,30 @@ interface PendingFlower extends FlowerInputPayload {
 
 const today = new Date().toISOString().split('T')[0];
 
-const initialDraft = {
+const baseDraft = {
   flowerTypeOption: '',
   customFlowerType: '',
   name: '',
   supplierId: '',
+  boxes: '',
   quantity: '',
   wholesaleCost: '',
-  date: today,
-  unitOfMeasure: 'Per Bunch'
+  date: today
 };
 
-export default function FlowerForm() {
+interface FlowerFormProps {
+  selectedSupplier?: Supplier;
+}
+
+export default function FlowerForm({ selectedSupplier }: FlowerFormProps) {
   const { suppliers, items, addFlowers } = usePricing();
+  const initialDraft = useMemo(
+    () => ({
+      ...baseDraft,
+      supplierId: selectedSupplier?.id ?? ''
+    }),
+    [selectedSupplier?.id]
+  );
   const [draft, setDraft] = useState(initialDraft);
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [pending, setPending] = useState<PendingFlower[]>([]);
@@ -50,6 +62,13 @@ export default function FlowerForm() {
     [suppliers]
   );
 
+  useEffect(() => {
+    setDraft((prev) => ({
+      ...prev,
+      supplierId: selectedSupplier?.id ?? ''
+    }));
+  }, [selectedSupplier?.id]);
+
   if (!suppliers.length) {
     return (
       <div className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-600">
@@ -73,11 +92,17 @@ export default function FlowerForm() {
     if (!draft.supplierId) {
       nextErrors.supplierId = 'Supplier is required';
     }
+    const trimmedBoxes = draft.boxes.trim();
+    if (!trimmedBoxes) {
+      nextErrors.boxes = 'Boxes are required';
+    } else if (!Number.isFinite(Number(trimmedBoxes)) || Number(trimmedBoxes) <= 0 || !Number.isInteger(Number(trimmedBoxes))) {
+      nextErrors.boxes = 'Boxes must be a positive whole number';
+    }
     const trimmedQuantity = draft.quantity.trim();
     if (!trimmedQuantity) {
-      nextErrors.quantity = 'Quantity is required';
+      nextErrors.quantity = 'Units are required';
     } else if (!Number.isFinite(Number(trimmedQuantity)) || Number(trimmedQuantity) <= 0) {
-      nextErrors.quantity = 'Quantity must be a positive number';
+      nextErrors.quantity = 'Units must be a positive number';
     }
     const trimmedCost = draft.wholesaleCost.trim();
     if (!trimmedCost) {
@@ -87,10 +112,6 @@ export default function FlowerForm() {
     }
     if (!draft.date.trim()) {
       nextErrors.date = 'Date is required';
-    }
-    const normalizedUnit = draft.unitOfMeasure === 'Per Stem' || draft.unitOfMeasure === 'Per Bunch' ? draft.unitOfMeasure : '';
-    if (!normalizedUnit) {
-      nextErrors.unitOfMeasure = 'Unit of measure is required';
     }
 
     setErrors(nextErrors);
@@ -103,17 +124,16 @@ export default function FlowerForm() {
       flowerType: normalizedType,
       name: trimmedName,
       supplierId: draft.supplierId,
+      boxes: Number(trimmedBoxes),
       quantity: Number(trimmedQuantity),
       wholesaleCost: Number(trimmedCost),
-      date: draft.date,
-      unitOfMeasure: normalizedUnit as 'Per Bunch' | 'Per Stem'
+      date: draft.date
     };
     setPending((prev) => [...prev, pendingFlower]);
     setDraft((prev) => ({
       ...initialDraft,
       flowerTypeOption: addingNewType ? '' : prev.flowerTypeOption,
-      date: prev.date,
-      unitOfMeasure: prev.unitOfMeasure
+      date: prev.date
     }));
     setAddingNewType(false);
     setErrors({});
@@ -182,40 +202,53 @@ export default function FlowerForm() {
               onChange={(event) => setDraft((prev) => ({ ...prev, customFlowerType: event.target.value }))}
               error={errors.flowerType}
             />
+        )}
+        <InputField
+          label="Flower name"
+          name="flowerName"
+          placeholder="Juliet"
+          value={draft.name}
+          onChange={(event) => setDraft((prev) => ({ ...prev, name: event.target.value }))}
+          error={errors.name}
+        />
+          {selectedSupplier ? null : (
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="font-medium text-slate-700">Supplier</span>
+              <select
+                value={draft.supplierId}
+                onChange={(event) => setDraft((prev) => ({ ...prev, supplierId: event.target.value }))}
+                className={`rounded-md border border-slate-300 px-3 py-2 text-base text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 ${
+                  errors.supplierId ? 'border-red-400 focus:ring-red-200' : ''
+                }`}
+              >
+                <option value="">Select a supplier</option>
+                {supplierOptions.map((supplier) => (
+                  <option key={supplier.id} value={supplier.id}>
+                    {supplier.label}
+                  </option>
+                ))}
+              </select>
+              {errors.supplierId && <span className="text-xs text-red-500">{errors.supplierId}</span>}
+            </label>
           )}
           <InputField
-            label="Flower name"
-            name="flowerName"
-            placeholder="Juliet"
-            value={draft.name}
-            onChange={(event) => setDraft((prev) => ({ ...prev, name: event.target.value }))}
-            error={errors.name}
+            label="Boxes"
+            name="boxes"
+            type="number"
+            min={1}
+            step={1}
+            placeholder="5"
+            value={draft.boxes}
+            onChange={(event) => setDraft((prev) => ({ ...prev, boxes: event.target.value }))}
+            error={errors.boxes}
           />
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-700">Supplier</span>
-            <select
-              value={draft.supplierId}
-              onChange={(event) => setDraft((prev) => ({ ...prev, supplierId: event.target.value }))}
-              className={`rounded-md border border-slate-300 px-3 py-2 text-base text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 ${
-                errors.supplierId ? 'border-red-400 focus:ring-red-200' : ''
-              }`}
-            >
-              <option value="">Select a supplier</option>
-              {supplierOptions.map((supplier) => (
-                <option key={supplier.id} value={supplier.id}>
-                  {supplier.label}
-                </option>
-              ))}
-            </select>
-            {errors.supplierId && <span className="text-xs text-red-500">{errors.supplierId}</span>}
-          </label>
           <InputField
-            label="Quantity"
+            label="Units"
             name="quantity"
             type="number"
             min={1}
             step={1}
-            placeholder="50"
+            placeholder="120"
             value={draft.quantity}
             onChange={(event) => setDraft((prev) => ({ ...prev, quantity: event.target.value }))}
             error={errors.quantity}
@@ -231,25 +264,6 @@ export default function FlowerForm() {
             onChange={(event) => setDraft((prev) => ({ ...prev, wholesaleCost: event.target.value }))}
             error={errors.wholesaleCost}
           />
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-700">Unit of measure</span>
-            <select
-              value={draft.unitOfMeasure}
-              onChange={(event) =>
-                setDraft((prev) => ({
-                  ...prev,
-                  unitOfMeasure: event.target.value === 'Per Stem' ? 'Per Stem' : 'Per Bunch'
-                }))
-              }
-              className={`rounded-md border border-slate-300 px-3 py-2 text-base text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 ${
-                errors.unitOfMeasure ? 'border-red-400 focus:ring-red-200' : ''
-              }`}
-            >
-              <option value="Per Bunch">Per Bunch</option>
-              <option value="Per Stem">Per Stem</option>
-            </select>
-            {errors.unitOfMeasure && <span className="text-xs text-red-500">{errors.unitOfMeasure}</span>}
-          </label>
           <InputField
             label="Date"
             name="date"
@@ -297,7 +311,8 @@ export default function FlowerForm() {
                   <th className="px-4 py-3">Type</th>
                   <th className="px-4 py-3">Flower</th>
                   <th className="px-4 py-3">Supplier</th>
-                  <th className="px-4 py-3 text-right">Quantity</th>
+                  <th className="px-4 py-3 text-right">Boxes</th>
+                  <th className="px-4 py-3 text-right">Units</th>
                   <th className="px-4 py-3 text-right">Cost</th>
                   <th className="px-4 py-3">Date</th>
                   <th className="px-4 py-3">Actions</th>
@@ -311,10 +326,8 @@ export default function FlowerForm() {
                       <td className="px-4 py-3 font-medium text-slate-900">{flower.flowerType}</td>
                   <td className="px-4 py-3">{flower.name}</td>
                   <td className="px-4 py-3">{supplierLabel}</td>
-                  <td className="px-4 py-3 text-right">
-                    {flower.quantity}{' '}
-                    <span className="text-xs text-slate-500">{flower.unitOfMeasure === 'Per Stem' ? 'stems' : 'bunches'}</span>
-                  </td>
+                  <td className="px-4 py-3 text-right">{flower.boxes ?? '—'}</td>
+                  <td className="px-4 py-3 text-right">{flower.quantity}</td>
                   <td className="px-4 py-3 text-right">${flower.wholesaleCost.toFixed(2)}</td>
                       <td className="px-4 py-3">{flower.date}</td>
                       <td className="px-4 py-3">

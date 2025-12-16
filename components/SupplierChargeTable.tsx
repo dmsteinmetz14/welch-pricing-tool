@@ -8,6 +8,7 @@ const NO_SUPPLIER_VALUE = '__UNASSIGNED__';
 
 interface SupplierChargeTableProps {
   charges: SupplierCharge[];
+  showFilters?: boolean;
 }
 
 function formatDateInput(date: Date) {
@@ -42,7 +43,7 @@ function parseDate(value?: string) {
   return date;
 }
 
-export default function SupplierChargeTable({ charges }: SupplierChargeTableProps) {
+export default function SupplierChargeTable({ charges, showFilters = true }: SupplierChargeTableProps) {
   const defaultStart = useMemo(() => formatDateInput(getStartOfCurrentWeek()), []);
   const defaultEnd = useMemo(() => formatDateInput(getEndOfCurrentWeek()), []);
   const [startDate, setStartDate] = useState(defaultStart);
@@ -62,6 +63,9 @@ export default function SupplierChargeTable({ charges }: SupplierChargeTableProp
   }, [charges]);
 
   const filteredCharges = useMemo(() => {
+    if (!showFilters) {
+      return charges;
+    }
     const start = startDate ? new Date(`${startDate}T00:00:00.000Z`) : null;
     const end = endDate ? new Date(`${endDate}T23:59:59.999Z`) : null;
     const filterValue = supplierFilter || null;
@@ -84,7 +88,7 @@ export default function SupplierChargeTable({ charges }: SupplierChargeTableProp
       }
       return true;
     });
-  }, [charges, endDate, startDate, supplierFilter]);
+  }, [charges, endDate, showFilters, startDate, supplierFilter]);
 
   const dateFormatter = useMemo(() => new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), []);
   const formatChargeDate = (value?: string) => {
@@ -102,51 +106,53 @@ export default function SupplierChargeTable({ charges }: SupplierChargeTableProp
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-end gap-4">
-        <label className="flex flex-col text-sm text-slate-600">
-          Start date
-          <input
-            type="date"
-            value={startDate}
-            onChange={(event) => setStartDate(event.target.value)}
-            className="mt-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
-          />
-        </label>
-        <label className="flex flex-col text-sm text-slate-600">
-          End date
-          <input
-            type="date"
-            value={endDate}
-            onChange={(event) => setEndDate(event.target.value)}
-            className="mt-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
-          />
-        </label>
-        <button
-          type="button"
-          onClick={resetToThisWeek}
-          className="inline-flex h-10 items-center rounded-md border border-slate-300 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-        >
-          Reset to this week
-        </button>
-        <p className="text-sm text-slate-500">
-          Showing {filteredCharges.length} of {charges.length} charges
-        </p>
-        <label className="flex flex-col text-sm text-slate-600">
-          Supplier
-          <select
-            value={supplierFilter}
-            onChange={(event) => setSupplierFilter(event.target.value)}
-            className="mt-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+      {showFilters && (
+        <div className="flex flex-wrap items-end gap-4">
+          <label className="flex flex-col text-sm text-slate-600">
+            Start date
+            <input
+              type="date"
+              value={startDate}
+              onChange={(event) => setStartDate(event.target.value)}
+              className="mt-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            />
+          </label>
+          <label className="flex flex-col text-sm text-slate-600">
+            End date
+            <input
+              type="date"
+              value={endDate}
+              onChange={(event) => setEndDate(event.target.value)}
+              className="mt-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            />
+          </label>
+          <button
+            type="button"
+            onClick={resetToThisWeek}
+            className="inline-flex h-10 items-center rounded-md border border-slate-300 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
           >
-            <option value="">All suppliers</option>
-            {supplierOptions.map((supplier) => (
-              <option key={supplier.value} value={supplier.value}>
-                {supplier.label}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+            Reset to this week
+          </button>
+          <p className="text-sm text-slate-500">
+            Showing {filteredCharges.length} of {charges.length} charges
+          </p>
+          <label className="flex flex-col text-sm text-slate-600">
+            Supplier
+            <select
+              value={supplierFilter}
+              onChange={(event) => setSupplierFilter(event.target.value)}
+              className="mt-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            >
+              <option value="">All suppliers</option>
+              {supplierOptions.map((supplier) => (
+                <option key={supplier.value} value={supplier.value}>
+                  {supplier.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      )}
       {filteredCharges.length === 0 ? (
         <p className="rounded-lg border border-dashed border-slate-200 bg-white p-6 text-sm text-slate-500">No charges match the selected date range.</p>
       ) : (
@@ -169,7 +175,12 @@ export default function SupplierChargeTable({ charges }: SupplierChargeTableProp
                   <td className="px-4 py-3">{charge.description || '—'}</td>
                   <td className="px-4 py-3">{charge.supplierName || 'Unassigned'}</td>
                   <td className="px-4 py-3 text-right font-medium text-slate-900">{formatCurrency(charge.amount ?? 0)}</td>
-                  <td className="px-4 py-3">{charge.unitOfCharge || 'Per Box'}</td>
+                  <td className="px-4 py-3">
+                    {charge.unitOfCharge || 'Per Box'}
+                    {(charge.unitOfCharge || 'Per Box') === 'Per Box' && (
+                      <span className="text-slate-500">{` — ${charge.boxCount ? `${charge.boxCount} box${charge.boxCount === 1 ? '' : 'es'}` : 'All boxes'}`}</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3">{formatChargeDate(charge.date)}</td>
                 </tr>
               ))}

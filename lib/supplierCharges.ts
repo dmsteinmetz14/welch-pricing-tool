@@ -24,7 +24,8 @@ interface ChargeRow {
   Supplier?: LinkRowValue[];
   'Charge Amount'?: number | string;
   Date?: string;
-  'Unit of Charge'?: string;
+  'Unit of Charge'?: string | SelectValue | null;
+  'Number of Boxes'?: number | string | null;
 }
 
 function getChargesTablePath() {
@@ -47,6 +48,7 @@ interface CreateChargeInput {
   supplierId?: string;
   date: string;
   unitOfCharge: 'Per Box' | 'Per Shipment';
+  boxCount?: number | null;
 }
 
 export async function createSupplierCharge(payload: CreateChargeInput): Promise<SupplierCharge> {
@@ -58,6 +60,7 @@ export async function createSupplierCharge(payload: CreateChargeInput): Promise<
       'Charge Description': payload.description,
       'Charge Amount': payload.amount,
       'Unit of Charge': payload.unitOfCharge,
+      'Number of Boxes': payload.unitOfCharge === 'Per Box' ? payload.boxCount ?? null : null,
       Supplier: supplier ? [supplier] : [],
       Date: payload.date
     })
@@ -70,6 +73,10 @@ function mapRowToCharge(row: ChargeRow): SupplierCharge {
   const rawAmount = row['Charge Amount'];
   const parsedAmount = typeof rawAmount === 'number' ? rawAmount : Number(rawAmount);
   const amount = Number.isFinite(parsedAmount) ? parsedAmount : 0;
+  const unitValue = normalizeBaserowString(row['Unit of Charge']);
+  const rawBoxCount = row['Number of Boxes'];
+  const parsedBoxCount = typeof rawBoxCount === 'number' ? rawBoxCount : Number(rawBoxCount);
+  const boxCount = Number.isFinite(parsedBoxCount) ? parsedBoxCount : null;
   return {
     id: String(row.id),
     chargeType: normalizeBaserowString(row['Charge Type']),
@@ -78,7 +85,8 @@ function mapRowToCharge(row: ChargeRow): SupplierCharge {
     date: row.Date ?? undefined,
     supplierId: supplier ? String(supplier.id) : undefined,
     supplierName: supplier?.value?.trim(),
-    unitOfCharge: row['Unit of Charge']?.trim() === 'Per Shipment' ? 'Per Shipment' : 'Per Box'
+    unitOfCharge: unitValue === 'Per Shipment' ? 'Per Shipment' : 'Per Box',
+    boxCount: unitValue === 'Per Box' ? boxCount : null
   };
 }
 

@@ -24,5 +24,19 @@ describe('pricing helpers', () => {
     expect(priced.stemCost).toBe(5);
     expect(priced.retailPerStem).toBe(7.5);
     expect(priced.totalRetail).toBe(75);
+    expect(priced.baseWholesaleCost).toBe(50);
+    expect(priced.allocatedChargeTotal).toBe(0);
+    expect(priced.effectiveWholesaleCost).toBe(50);
+  });
+
+  it('honors overrides when building priced item', () => {
+    const priced = buildPricedItem(
+      { id: '1', name: 'Rose', quantity: 10, wholesaleCost: 55 },
+      40,
+      { baseWholesaleCost: 50, allocatedChargeTotal: 20, effectiveWholesaleCost: 55 }
+    );
+    expect(priced.baseWholesaleCost).toBe(50);
+    expect(priced.allocatedChargeTotal).toBe(20);
+    expect(priced.effectiveWholesaleCost).toBe(55);
   });
 });

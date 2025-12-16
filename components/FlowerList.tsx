@@ -4,16 +4,6 @@ import { useMemo } from 'react';
 import { usePricing } from '@/contexts/PricingContext';
 import { formatCurrency } from '@/lib/pricing';
 
-function formatUnitLabel(unit?: 'Per Bunch' | 'Per Stem') {
-  if (unit === 'Per Stem') {
-    return 'stems';
-  }
-  if (unit === 'Per Bunch') {
-    return 'bunches';
-  }
-  return 'units';
-}
-
 export default function FlowerList() {
   const { items, suppliers } = usePricing();
 
@@ -41,11 +31,12 @@ export default function FlowerList() {
             <p className="font-medium text-slate-900">{item.name}</p>
             <p className="text-slate-500">
               {item.flowerType ? `${item.flowerType} · ` : ''}
-              {item.quantity} {formatUnitLabel(item.unitOfMeasure)} · {supplierLookup.get(item.supplierId ?? '') ?? 'Unassigned supplier'}
+              {item.boxes ? `${item.boxes} boxes · ` : ''}
+              {item.quantity} units · {supplierLookup.get(item.supplierId ?? '') ?? 'Unassigned supplier'}
             </p>
             {item.date && <p className="text-xs text-slate-400">Date: {item.date}</p>}
           </div>
-          <p className="font-medium text-slate-900">{formatCurrency(item.wholesaleCost)}</p>
+          <p className="font-medium text-slate-900">{formatCurrency(item.wholesaleCost * item.quantity)}</p>
         </li>
       ))}
     </ul>
