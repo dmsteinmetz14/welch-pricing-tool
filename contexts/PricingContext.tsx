@@ -205,14 +205,15 @@ export function PricingProvider({ children }: { children: React.ReactNode }) {
         const chargePerUnit = item.quantity > 0 ? allocatedChargeTotal / item.quantity : 0;
         const effectiveWholesale = item.wholesaleCost + chargePerUnit;
         const appliedMarkup = state.itemMarkups[item.id] ?? state.markup;
-        const priced = buildPricedItem({ ...item, wholesaleCost: effectiveWholesale }, appliedMarkup);
-        return {
-          ...priced,
+        return buildPricedItem(
+          { ...item, wholesaleCost: effectiveWholesale },
           appliedMarkup,
-          baseWholesaleCost: item.wholesaleCost,
-          allocatedChargeTotal,
-          effectiveWholesaleCost: effectiveWholesale
-        };
+          {
+            baseWholesaleCost: item.wholesaleCost,
+            allocatedChargeTotal,
+            effectiveWholesaleCost: effectiveWholesale
+          }
+        );
       }),
     [state.items, state.itemMarkups, state.markup, allocationMap]
   );

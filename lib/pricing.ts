@@ -29,15 +29,29 @@ export function formatCurrency(value: number): string {
   }).format(value);
 }
 
-export function buildPricedItem(item: FlowerItem, markupPercent: number): PricedFlowerItem {
+type PricingOverrides = Partial<
+  Pick<PricedFlowerItem, 'baseWholesaleCost' | 'allocatedChargeTotal' | 'effectiveWholesaleCost'>
+>;
+
+export function buildPricedItem(
+  item: FlowerItem,
+  markupPercent: number,
+  overrides: PricingOverrides = {}
+): PricedFlowerItem {
   const stemCost = calculateStemCost(item.wholesaleCost, item.quantity);
   const retailPerStem = calculateRetailPerStem(stemCost, markupPercent);
   const totalRetail = calculateTotalRetail(item.quantity, retailPerStem);
+  const baseWholesaleCost = overrides.baseWholesaleCost ?? item.wholesaleCost;
+  const allocatedChargeTotal = overrides.allocatedChargeTotal ?? 0;
+  const effectiveWholesaleCost = overrides.effectiveWholesaleCost ?? item.wholesaleCost;
   return {
     ...item,
     stemCost,
     retailPerStem,
     totalRetail,
-    appliedMarkup: markupPercent
+    appliedMarkup: markupPercent,
+    baseWholesaleCost,
+    allocatedChargeTotal,
+    effectiveWholesaleCost
   };
 }
