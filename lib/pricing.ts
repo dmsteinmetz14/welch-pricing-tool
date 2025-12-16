@@ -37,6 +37,7 @@ export function buildPricedItem(item: FlowerItem, markupPercent: number): Priced
     ...item,
     stemCost,
     retailPerStem,
-    totalRetail
+    totalRetail,
+    appliedMarkup: markupPercent
   };
 }

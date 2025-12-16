@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 const links: { href: Route; label: string }[] = [
   { href: '/input', label: 'Flower Input' },
   { href: '/suppliers', label: 'Supplier Input' },
-  { href: '/supplier-charges', label: 'Supplier Charges' },
+  { href: '/pricing', label: 'Pricing' },
   { href: '/price-sheet', label: 'Price Sheet' }
 ];
 

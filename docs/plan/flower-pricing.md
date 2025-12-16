@@ -2,7 +2,8 @@
 
 ## Pages
 - **Input (`/input`)**: supplier selector + multi-row flower form + current flower list summary.
-- **Price Sheet (`/price-sheet`)**: markup controls + retail pricing table summarizing calculations.
+- **Pricing (`/pricing`)**: markup controls + interactive retail pricing table.
+- **Price Sheet (`/price-sheet`)**: read-only, shareable sheet summarizing pricing outputs.
 - **Suppliers (`/suppliers`)**: optional management page for supplier data and additional charges.
 
 ## State & Data Flow

@@ -13,13 +13,13 @@ interface LinkRowValue {
 
 interface FlowerRow {
   id: number;
-  'Flower type'?: string;
+  'Flower Type'?: string;
   'Flower Name'?: string;
+  Units?: number | string;
   Suppliers?: LinkRowValue[];
   Date?: string;
   Cost?: number | string;
-  Quantity?: number | string;
-  'Unit of Measure'?: string;
+  Boxes?: number | string | null;
 }
 
 function getFlowersTablePath() {
@@ -39,17 +39,18 @@ export async function createFlowers(flowers: FlowerInputPayload[]): Promise<Flow
   const created: FlowerItem[] = [];
   for (const flower of flowers) {
     const supplierId = Number(flower.supplierId);
+    const payload: Record<string, unknown> = {
+      'Flower Type': flower.flowerType,
+      'Flower Name': flower.name,
+      Suppliers: Number.isFinite(supplierId) ? [supplierId] : [],
+      Date: flower.date,
+      Cost: flower.wholesaleCost,
+      Units: flower.quantity,
+      Boxes: Number.isFinite(flower.boxes) ? flower.boxes : null
+    };
     const row = await baserowFetch<FlowerRow>(getFlowersTablePath(), {
       method: 'POST',
-      body: JSON.stringify({
-        'Flower type': flower.flowerType,
-        'Flower Name': flower.name,
-        Suppliers: Number.isFinite(supplierId) ? [supplierId] : [],
-        Date: flower.date,
-        Cost: flower.wholesaleCost,
-        Quantity: flower.quantity,
-        'Unit of Measure': flower.unitOfMeasure
-      })
+      body: JSON.stringify(payload)
     });
     created.push(mapRowToFlower(row));
   }
@@ -60,16 +61,19 @@ function mapRowToFlower(row: FlowerRow): FlowerItem {
   const supplier = Array.isArray(row.Suppliers) ? row.Suppliers[0] : undefined;
   const rawCost = row.Cost;
   const cost = typeof rawCost === 'number' ? rawCost : Number(rawCost);
-  const rawQuantity = row.Quantity;
+  const flowerTypeValue = row['Flower Type'];
+  const rawQuantity = row.Units;
   const quantity = typeof rawQuantity === 'number' ? rawQuantity : Number(rawQuantity);
+  const rawBoxes = row.Boxes;
+  const parsedBoxes = typeof rawBoxes === 'number' ? rawBoxes : Number(rawBoxes);
   return {
     id: String(row.id),
-    flowerType: row['Flower type']?.trim() ?? '',
+    flowerType: flowerTypeValue?.trim() ?? '',
     name: row['Flower Name']?.trim() ?? '',
     quantity: Number.isFinite(quantity) ? quantity : 0,
     wholesaleCost: Number.isFinite(cost) ? cost : 0,
     supplierId: supplier ? String(supplier.id) : undefined,
     date: row.Date ?? undefined,
-    unitOfMeasure: row['Unit of Measure'] === 'Per Stem' ? 'Per Stem' : 'Per Bunch'
+    boxes: Number.isFinite(parsedBoxes) ? parsedBoxes : null
   };
 }

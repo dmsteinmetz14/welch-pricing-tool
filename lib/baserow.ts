@@ -18,10 +18,15 @@ export async function baserowFetch<TResponse>(path: string, init?: RequestInit):
   }
   headers.set('Accept', 'application/json');
 
-  const response = await fetch(url, {
-    ...init,
-    headers
-  });
+  const response = await fetch(
+    url,
+    {
+      cache: init?.cache ?? 'no-store',
+      next: init?.next ?? { revalidate: 0 },
+      ...init,
+      headers
+    }
+  );
 
   const payload = (await response.json().catch(() => ({}))) as TResponse & BaserowErrorPayload;
   if (!response.ok) {
