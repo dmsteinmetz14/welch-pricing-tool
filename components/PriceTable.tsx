@@ -61,10 +61,7 @@ export default function PriceTable({ items, totals, overallMarkup, itemMarkups, 
                     {item.quantity} units
                   </p>
                 </td>
-                <td className="px-4 py-3">
-                  <p className="text-xs uppercase tracking-wide text-slate-400">{item.flowerType || '—'}</p>
-                </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 align-top">
                   <input
                     type="number"
                     min={0}
