@@ -1,9 +1,10 @@
 'use client';
 
 import PriceTable from '@/components/PriceTable';
+import RestrictedContent from '@/components/RestrictedContent';
 import { usePricing } from '@/contexts/PricingContext';
 
-export default function PricingPage() {
+function PricingPageContent() {
   const { pricedItems, totals, markup, setMarkup, setItemMarkup, resetItemMarkup, applyMarkupToAll, itemMarkups } = usePricing();
 
   return (
@@ -60,5 +61,13 @@ export default function PricingPage() {
         onResetMarkup={resetItemMarkup}
       />
     </div>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <RestrictedContent featureLabel="Pricing">
+      <PricingPageContent />
+    </RestrictedContent>
   );
 }

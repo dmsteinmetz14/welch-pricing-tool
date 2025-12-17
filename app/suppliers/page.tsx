@@ -2,8 +2,9 @@
 
 import SupplierForm from '@/components/SupplierForm';
 import SupplierList from '@/components/SupplierList';
+import RestrictedContent from '@/components/RestrictedContent';
 
-export default function SuppliersPage() {
+function SuppliersPageContent() {
   return (
     <div className="space-y-8">
       <div className="space-y-2">
@@ -20,5 +21,13 @@ export default function SuppliersPage() {
         <SupplierForm />
       </div>
     </div>
+  );
+}
+
+export default function SuppliersPage() {
+  return (
+    <RestrictedContent featureLabel="Supplier Input">
+      <SuppliersPageContent />
+    </RestrictedContent>
   );
 }

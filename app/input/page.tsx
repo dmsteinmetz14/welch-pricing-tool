@@ -6,11 +6,12 @@ import FlowerForm from '@/components/FlowerForm';
 import FlowerList from '@/components/FlowerList';
 import SupplierChargeTable from '@/components/SupplierChargeTable';
 import SupplierChargeForm from '@/components/SupplierChargeForm';
+import RestrictedContent from '@/components/RestrictedContent';
 import { usePricing } from '@/contexts/PricingContext';
 import { formatCurrency } from '@/lib/pricing';
 import { SupplierCharge } from '@/types/suppliers';
 
-export default function InputPage() {
+function InputPageContent() {
   const { totals, suppliers } = usePricing();
   const [charges, setCharges] = useState<SupplierCharge[]>([]);
   const [isLoadingCharges, setIsLoadingCharges] = useState(true);
@@ -214,6 +215,14 @@ export default function InputPage() {
         <FlowerList />
       </section>
     </div>
+  );
+}
+
+export default function InputPage() {
+  return (
+    <RestrictedContent featureLabel="Flower Input">
+      <InputPageContent />
+    </RestrictedContent>
   );
 }
 
