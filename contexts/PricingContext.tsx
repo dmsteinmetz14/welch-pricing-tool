@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer } from 'react';
 import { FlowerInputPayload, FlowerItem, PricedFlowerItem } from '@/types/pricing';
 import { Supplier, SupplierInput, SupplierCharge } from '@/types/suppliers';
+import { StandingOrder, StandingOrderPayload } from '@/types/standingOrders';
 import { buildPricedItem, DEFAULT_MARKUP_PERCENT } from '@/lib/pricing';
 
 interface PricingState {
@@ -11,6 +12,7 @@ interface PricingState {
   suppliers: Supplier[];
   itemMarkups: Record<string, number | undefined>;
   charges: SupplierCharge[];
+  standingOrders: StandingOrder[];
 }
 
 interface PricingContextValue {
@@ -30,6 +32,11 @@ interface PricingContextValue {
   applyMarkupToAll: () => void;
   itemMarkups: Record<string, number | undefined>;
   addSupplier: (supplier: SupplierInput) => Promise<void>;
+  standingOrders: StandingOrder[];
+  refreshStandingOrders: () => Promise<StandingOrder[]>;
+  createStandingOrder: (payload: StandingOrderPayload) => Promise<StandingOrder>;
+  updateStandingOrder: (id: string, payload: StandingOrderPayload) => Promise<StandingOrder>;
+  deleteStandingOrder: (id: string) => Promise<void>;
 }
 
 const PricingContext = createContext<PricingContextValue | undefined>(undefined);
@@ -39,7 +46,8 @@ const initialState: PricingState = {
   markup: DEFAULT_MARKUP_PERCENT,
   suppliers: [],
   itemMarkups: {},
-  charges: []
+  charges: [],
+  standingOrders: []
 };
 
 type PricingAction =
@@ -52,7 +60,11 @@ type PricingAction =
   | { type: 'SET_ITEM_MARKUP'; payload: { id: string; markup?: number } }
   | { type: 'APPLY_MARKUP_TO_ALL' }
   | { type: 'RESET_ITEM_MARKUP'; payload: { id: string } }
-  | { type: 'SET_CHARGES'; payload: SupplierCharge[] };
+  | { type: 'SET_CHARGES'; payload: SupplierCharge[] }
+  | { type: 'SET_STANDING_ORDERS'; payload: StandingOrder[] }
+  | { type: 'ADD_STANDING_ORDER'; payload: StandingOrder }
+  | { type: 'UPDATE_STANDING_ORDER'; payload: StandingOrder }
+  | { type: 'REMOVE_STANDING_ORDER'; payload: { id: string } };
 
 function pricingReducer(state: PricingState, action: PricingAction): PricingState {
   switch (action.type) {
@@ -106,6 +118,21 @@ function pricingReducer(state: PricingState, action: PricingAction): PricingStat
     case 'SET_CHARGES': {
       return { ...state, charges: action.payload };
     }
+    case 'SET_STANDING_ORDERS': {
+      return { ...state, standingOrders: action.payload };
+    }
+    case 'ADD_STANDING_ORDER': {
+      return { ...state, standingOrders: [...state.standingOrders, action.payload] };
+    }
+    case 'UPDATE_STANDING_ORDER': {
+      return {
+        ...state,
+        standingOrders: state.standingOrders.map((order) => (order.id === action.payload.id ? action.payload : order))
+      };
+    }
+    case 'REMOVE_STANDING_ORDER': {
+      return { ...state, standingOrders: state.standingOrders.filter((order) => order.id !== action.payload.id) };
+    }
     default:
       return state;
   }
@@ -117,14 +144,21 @@ export function PricingProvider({ children }: { children: React.ReactNode }) {
     let isMounted = true;
     const loadData = async () => {
       try {
-        const [suppliersResponse, flowersResponse, chargesResponse] = await Promise.all([
+        const [suppliersResponse, flowersResponse, chargesResponse, standingOrdersResponse] = await Promise.all([
           fetch('/api/suppliers'),
           fetch('/api/flowers'),
-          fetch('/api/supplier-charges')
+          fetch('/api/supplier-charges'),
+          fetch('/api/standing-orders')
         ]);
         const suppliersPayload = (await suppliersResponse.json()) as { suppliers?: Supplier[]; error?: string };
         const flowersPayload = (await flowersResponse.json()) as { flowers?: FlowerItem[]; error?: string };
         const chargesPayload = (await chargesResponse.json()) as { charges?: SupplierCharge[]; error?: string };
+        let standingOrdersPayload: { standingOrders?: StandingOrder[]; error?: string } | null = null;
+        try {
+          standingOrdersPayload = (await standingOrdersResponse.json()) as { standingOrders?: StandingOrder[]; error?: string };
+        } catch (error) {
+          console.error('Failed to parse standing orders payload', error);
+        }
         if (!suppliersResponse.ok) {
           throw new Error(suppliersPayload.error || 'Unable to load suppliers');
         }
@@ -143,6 +177,11 @@ export function PricingProvider({ children }: { children: React.ReactNode }) {
           }
           if (chargesPayload.charges) {
             dispatch({ type: 'SET_CHARGES', payload: chargesPayload.charges });
+          }
+          if (standingOrdersResponse.ok && standingOrdersPayload?.standingOrders) {
+            dispatch({ type: 'SET_STANDING_ORDERS', payload: standingOrdersPayload.standingOrders });
+          } else if (!standingOrdersResponse.ok) {
+            console.warn('Unable to load standing orders; continuing without templates', standingOrdersPayload?.error);
           }
         }
       } catch (error) {
@@ -283,6 +322,62 @@ export function PricingProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'APPLY_MARKUP_TO_ALL' });
   }, []);
 
+  const refreshStandingOrders = useCallback(async () => {
+    const response = await fetch('/api/standing-orders', { cache: 'no-store' });
+    const payload = (await response.json()) as { standingOrders?: StandingOrder[]; error?: string };
+    if (!response.ok || !payload.standingOrders) {
+      throw new Error(payload.error || 'Unable to load standing orders');
+    }
+    dispatch({ type: 'SET_STANDING_ORDERS', payload: payload.standingOrders });
+    return payload.standingOrders;
+  }, []);
+
+  const createStandingOrder = useCallback(
+    async (payload: StandingOrderPayload) => {
+      const response = await fetch('/api/standing-orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = (await response.json()) as { standingOrder?: StandingOrder; error?: string };
+      if (!response.ok || !data.standingOrder) {
+        throw new Error(data.error || 'Unable to create standing order');
+      }
+      dispatch({ type: 'ADD_STANDING_ORDER', payload: data.standingOrder });
+      return data.standingOrder;
+    },
+    []
+  );
+
+  const updateStandingOrderTemplate = useCallback(async (id: string, payload: StandingOrderPayload) => {
+    const response = await fetch(`/api/standing-orders/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = (await response.json()) as { standingOrder?: StandingOrder; error?: string };
+    if (!response.ok || !data.standingOrder) {
+      throw new Error(data.error || 'Unable to update standing order');
+    }
+    dispatch({ type: 'UPDATE_STANDING_ORDER', payload: data.standingOrder });
+    return data.standingOrder;
+  }, []);
+
+  const deleteStandingOrderTemplate = useCallback(async (id: string) => {
+    const response = await fetch(`/api/standing-orders/${id}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => ({}))) as { error?: string };
+      throw new Error(payload.error || 'Unable to delete standing order');
+    }
+    dispatch({ type: 'REMOVE_STANDING_ORDER', payload: { id } });
+  }, []);
+
   const value = useMemo(
     () => ({
       items: state.items,
@@ -296,7 +391,12 @@ export function PricingProvider({ children }: { children: React.ReactNode }) {
       setItemMarkup,
       resetItemMarkup,
       applyMarkupToAll,
-      addSupplier
+      addSupplier,
+      standingOrders: state.standingOrders,
+      refreshStandingOrders,
+      createStandingOrder,
+      updateStandingOrder: updateStandingOrderTemplate,
+      deleteStandingOrder: deleteStandingOrderTemplate
     }),
     [
       state.items,
@@ -310,7 +410,12 @@ export function PricingProvider({ children }: { children: React.ReactNode }) {
       setItemMarkup,
       resetItemMarkup,
       applyMarkupToAll,
-      addSupplier
+      addSupplier,
+      state.standingOrders,
+      refreshStandingOrders,
+      createStandingOrder,
+      updateStandingOrderTemplate,
+      deleteStandingOrderTemplate
     ]
   );
 

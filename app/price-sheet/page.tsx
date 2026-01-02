@@ -3,15 +3,18 @@
 import { useMemo, useState } from 'react';
 import { usePricing } from '@/contexts/PricingContext';
 import { formatCurrency } from '@/lib/pricing';
+import { filterFlowersToCurrentWeek } from '@/lib/flowers';
 import type { PricedFlowerItem } from '@/types/pricing';
 
 export default function PriceSheetPage() {
   const { pricedItems } = usePricing();
   const [query, setQuery] = useState('');
 
+  const currentWeekItems = useMemo(() => filterFlowersToCurrentWeek(pricedItems), [pricedItems]);
+
   const grouped = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    const rows = pricedItems.map(buildRow).filter((row) => {
+    const rows = currentWeekItems.map(buildRow).filter((row) => {
       if (!normalizedQuery) {
         return true;
       }
@@ -32,7 +35,7 @@ export default function PriceSheetPage() {
       type: key,
       rows: map.get(key)!.sort((a, b) => a.name.localeCompare(b.name))
     }));
-  }, [pricedItems, query]);
+  }, [currentWeekItems, query]);
 
   const handlePrint = () => {
     if (typeof window !== 'undefined') {
