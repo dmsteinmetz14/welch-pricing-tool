@@ -34,6 +34,22 @@ NEXT_PUBLIC_ALLOWED_GOOGLE_EMAILS=user1@example.com,user2@example.com
 
 If the list is empty, any authenticated Google user can open the restricted pages. The `/price-sheet` route always stays public.
 
+## Baserow Configuration
+
+The app reads and writes data via Baserow. Set these environment variables in `.env.local` so each table can be addressed:
+
+```
+BASEROW_TOKEN=...
+BASEROW_API_URL=https://api.baserow.io # or your self-hosted base
+BASEROW_FLOWERS_TABLE_ID=...
+BASEROW_SUPPLIERS_TABLE_ID=...
+BASEROW_CHARGES_TABLE_ID=...
+BASEROW_STANDING_ORDERS_TABLE_ID=...
+BASEROW_STANDING_ORDER_LINES_TABLE_ID=...
+```
+
+Standing orders rely on two tables: one row per standing order plus a linked table that stores the individual flower lines.
+
 ## Available Scripts
 
 - `npm run dev` – start Next.js dev server.
