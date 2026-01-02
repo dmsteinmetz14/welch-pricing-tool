@@ -5,12 +5,13 @@ import InputField from './InputField';
 import { usePricing } from '@/contexts/PricingContext';
 import { FlowerInputPayload } from '@/types/pricing';
 import { Supplier } from '@/types/suppliers';
+import { formatDateInput, getStartOfCurrentWeek } from '@/lib/date';
 
 interface PendingFlower extends FlowerInputPayload {
   id: string;
 }
 
-const today = new Date().toISOString().split('T')[0];
+const defaultDate = formatDateInput(getStartOfCurrentWeek());
 
 const baseDraft = {
   flowerTypeOption: '',
@@ -20,7 +21,7 @@ const baseDraft = {
   boxes: '',
   quantity: '',
   wholesaleCost: '',
-  date: today
+  date: defaultDate
 };
 
 interface FlowerFormProps {

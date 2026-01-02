@@ -10,7 +10,6 @@ function PricingPageContent() {
   return (
     <div className="space-y-8">
       <div className="space-y-2">
-        <p className="text-sm uppercase tracking-wide text-slate-500">Step 3</p>
         <h1 className="text-3xl font-semibold text-slate-900">Pricing</h1>
         <p className="text-base text-slate-600">Adjust markups to see how retail totals change before sharing with customers.</p>
       </div>
