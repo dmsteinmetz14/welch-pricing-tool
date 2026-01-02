@@ -3,33 +3,13 @@
 import { useMemo, useState } from 'react';
 import { SupplierCharge } from '@/types/suppliers';
 import { formatCurrency } from '@/lib/pricing';
+import { formatDateInput, getEndOfCurrentWeek, getStartOfCurrentWeek } from '@/lib/date';
 
 const NO_SUPPLIER_VALUE = '__UNASSIGNED__';
 
 interface SupplierChargeTableProps {
   charges: SupplierCharge[];
   showFilters?: boolean;
-}
-
-function formatDateInput(date: Date) {
-  return date.toISOString().split('T')[0];
-}
-
-function getStartOfCurrentWeek() {
-  const now = new Date();
-  const day = now.getDay(); // 0 (Sunday) - 6 (Saturday)
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Start Monday
-  const start = new Date(now.setDate(diff));
-  start.setHours(0, 0, 0, 0);
-  return start;
-}
-
-function getEndOfCurrentWeek() {
-  const start = getStartOfCurrentWeek();
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-  end.setHours(23, 59, 59, 999);
-  return end;
 }
 
 function parseDate(value?: string) {

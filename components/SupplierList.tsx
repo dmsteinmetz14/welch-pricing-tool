@@ -1,10 +1,29 @@
 'use client';
 
+import { useMemo } from 'react';
 import { usePricing } from '@/contexts/PricingContext';
+import { Supplier } from '@/types/suppliers';
 
-export default function SupplierList() {
+interface SupplierListProps {
+  initialSuppliers?: Supplier[];
+}
+
+export default function SupplierList({ initialSuppliers = [] }: SupplierListProps) {
   const { suppliers } = usePricing();
-  if (!suppliers.length) {
+  const displayedSuppliers = suppliers.length ? suppliers : initialSuppliers;
+
+  const sortedSuppliers = useMemo(() => {
+    return [...displayedSuppliers].sort((a, b) => {
+      const nameA = a.name?.toLowerCase() ?? '';
+      const nameB = b.name?.toLowerCase() ?? '';
+      if (nameA === nameB) {
+        return (a.location ?? '').localeCompare(b.location ?? '');
+      }
+      return nameA.localeCompare(nameB);
+    });
+  }, [displayedSuppliers]);
+
+  if (!sortedSuppliers.length) {
     return <p className="text-sm text-slate-500">No suppliers added yet. Start with the form above.</p>;
   }
 
@@ -18,7 +37,7 @@ export default function SupplierList() {
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-200 bg-white text-slate-700">
-          {suppliers.map((supplier) => (
+          {sortedSuppliers.map((supplier) => (
             <tr key={supplier.id}>
               <td className="px-4 py-3 font-medium text-slate-900">{supplier.name || 'Unnamed'}</td>
               <td className="px-4 py-3 font-medium text-slate-900">{supplier.location}</td>

@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import InputField from './InputField';
 import { Supplier } from '@/types/suppliers';
+import { formatDateInput, getStartOfCurrentWeek } from '@/lib/date';
 
 interface SupplierChargeFormProps {
   suppliers: Supplier[];
@@ -22,8 +23,7 @@ interface FieldState {
   boxCount: string;
 }
 
-const today = new Date();
-const defaultDate = today.toISOString().split('T')[0];
+const defaultDate = formatDateInput(getStartOfCurrentWeek());
 
 const initialState: FieldState = {
   chargeType: '',

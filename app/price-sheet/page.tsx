@@ -44,7 +44,6 @@ export default function PriceSheetPage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="space-y-2">
-          <p className="text-sm uppercase tracking-wide text-slate-500">Step 4</p>
           <h1 className="text-3xl font-semibold text-slate-900">Price Sheet</h1>
           <p className="text-base text-slate-600">A clean, read-only sheet you can share or export for wholesale partners.</p>
         </div>

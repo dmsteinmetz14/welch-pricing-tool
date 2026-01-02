@@ -10,15 +10,27 @@ import RestrictedContent from '@/components/RestrictedContent';
 import { usePricing } from '@/contexts/PricingContext';
 import { formatCurrency } from '@/lib/pricing';
 import { SupplierCharge } from '@/types/suppliers';
+import { formatDateInput, getEndOfCurrentWeek, getStartOfCurrentWeek } from '@/lib/date';
+import { filterFlowersByDateRange } from '@/lib/flowers';
 
 function InputPageContent() {
-  const { totals, suppliers } = usePricing();
+  const { suppliers, items } = usePricing();
   const [charges, setCharges] = useState<SupplierCharge[]>([]);
   const [isLoadingCharges, setIsLoadingCharges] = useState(true);
   const [chargesError, setChargesError] = useState<string | null>(null);
   const [selectedSupplierId, setSelectedSupplierId] = useState('');
   const [startDate, setStartDate] = useState(() => formatDateInput(getStartOfCurrentWeek()));
   const [endDate, setEndDate] = useState(() => formatDateInput(getEndOfCurrentWeek()));
+  const currentWeekStart = formatDateInput(getStartOfCurrentWeek());
+  const currentWeekEnd = formatDateInput(getEndOfCurrentWeek());
+  const currentWeekFlowers = useMemo(
+    () => filterFlowersByDateRange(items, currentWeekStart, currentWeekEnd),
+    [items, currentWeekEnd, currentWeekStart]
+  );
+  const weeklyWholesaleTotal = useMemo(
+    () => currentWeekFlowers.reduce((sum, item) => sum + item.wholesaleCost * item.quantity, 0),
+    [currentWeekFlowers]
+  );
 
   const loadCharges = useCallback(async () => {
     setIsLoadingCharges(true);
@@ -191,7 +203,6 @@ function InputPageContent() {
           </section>
           <section className="space-y-4">
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Step 3 · Flower input</p>
               <h2 className="text-xl font-semibold text-slate-900">Capture flowers for {selectedSupplier.name || selectedSupplier.location || 'this supplier'}</h2>
               <p className="text-sm text-slate-600">
                 Log each line item from the invoice so downstream pricing stays accurate.
@@ -206,13 +217,8 @@ function InputPageContent() {
         </div>
       )}
       <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-slate-900">Current Flowers</h2>
-          <p className="text-sm text-slate-500">
-            Wholesale total: <span className="font-semibold text-slate-900">{formatCurrency(totals.wholesale)}</span>
-          </p>
-        </div>
-        <FlowerList />
+        <h2 className="text-xl font-semibold text-slate-900">Current Flowers</h2>
+        <FlowerList items={currentWeekFlowers} />
       </section>
     </div>
   );
@@ -224,27 +230,6 @@ export default function InputPage() {
       <InputPageContent />
     </RestrictedContent>
   );
-}
-
-function formatDateInput(date: Date) {
-  return date.toISOString().split('T')[0];
-}
-
-function getStartOfCurrentWeek() {
-  const now = new Date();
-  const day = now.getDay();
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-  const start = new Date(now.setDate(diff));
-  start.setHours(0, 0, 0, 0);
-  return start;
-}
-
-function getEndOfCurrentWeek() {
-  const start = getStartOfCurrentWeek();
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-  end.setHours(23, 59, 59, 999);
-  return end;
 }
 
 function parseChargeDate(value?: string) {
