@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   }
 
   const validation = normalizeStandingOrderPayload(body as Record<string, unknown>);
-  if (validation.error) {
+  if ('error' in validation) {
     return NextResponse.json({ error: validation.error }, { status: 400 });
   }
 

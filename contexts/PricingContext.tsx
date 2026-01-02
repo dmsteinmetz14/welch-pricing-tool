@@ -33,7 +33,7 @@ interface PricingContextValue {
   itemMarkups: Record<string, number | undefined>;
   addSupplier: (supplier: SupplierInput) => Promise<void>;
   standingOrders: StandingOrder[];
-  refreshStandingOrders: () => Promise<void>;
+  refreshStandingOrders: () => Promise<StandingOrder[]>;
   createStandingOrder: (payload: StandingOrderPayload) => Promise<StandingOrder>;
   updateStandingOrder: (id: string, payload: StandingOrderPayload) => Promise<StandingOrder>;
   deleteStandingOrder: (id: string) => Promise<void>;

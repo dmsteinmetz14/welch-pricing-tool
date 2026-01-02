@@ -86,11 +86,11 @@ function isWithinRange(dateValue: string | null, start: string, end: string) {
   return dateValue >= start && dateValue <= end;
 }
 
-export function filterFlowersByDateRange(flowers: FlowerItem[], startDate: string, endDate: string) {
+export function filterFlowersByDateRange<T extends FlowerItem>(flowers: T[], startDate: string, endDate: string): T[] {
   return flowers.filter((flower) => isWithinRange(normalizeDateInput(flower.date), startDate, endDate));
 }
 
-export function filterFlowersToCurrentWeek(flowers: FlowerItem[], startDate?: string, endDate?: string) {
+export function filterFlowersToCurrentWeek<T extends FlowerItem>(flowers: T[], startDate?: string, endDate?: string): T[] {
   const rangeStart = startDate ?? formatDateInput(getStartOfCurrentWeek());
   const rangeEnd = endDate ?? formatDateInput(getEndOfCurrentWeek());
   return filterFlowersByDateRange(flowers, rangeStart, rangeEnd);

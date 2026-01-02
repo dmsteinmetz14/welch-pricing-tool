@@ -16,7 +16,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
   const validation = normalizeStandingOrderPayload(body as Record<string, unknown>);
-  if (validation.error) {
+  if ('error' in validation) {
     return NextResponse.json({ error: validation.error }, { status: 400 });
   }
   try {
