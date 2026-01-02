@@ -4,6 +4,8 @@ import RestrictedContent from '@/components/RestrictedContent';
 import { listSuppliers } from '@/lib/suppliers';
 import { Supplier } from '@/types/suppliers';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SuppliersPage() {
   let initialSuppliers: Supplier[] = [];
   try {

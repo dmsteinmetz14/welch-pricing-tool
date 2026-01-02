@@ -21,9 +21,8 @@ export async function baserowFetch<TResponse>(path: string, init?: RequestInit):
   const response = await fetch(
     url,
     {
-      cache: init?.cache ?? 'no-store',
-      next: init?.next ?? { revalidate: 0 },
       ...init,
+      cache: init?.cache ?? 'no-store',
       headers
     }
   );
