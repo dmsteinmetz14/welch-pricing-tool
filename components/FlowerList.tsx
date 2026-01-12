@@ -36,23 +36,23 @@ export default function FlowerList({ items: providedItems }: FlowerListProps = {
   }, [suppliers]);
 
   if (!flowersThisWeek.length) {
-    return <p className="text-sm text-slate-500">No flowers added for this week yet.</p>;
+    return <p className="text-sm text-sage">No flowers added for this week yet.</p>;
   }
 
   return (
-    <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
+    <ul className="divide-y divide-stone rounded-card border border-stone bg-white shadow-card">
       {flowersThisWeek.map((item) => (
         <li key={item.id} className="flex items-center justify-between px-4 py-3 text-sm">
           <div>
-            <p className="font-medium text-slate-900">{item.name}</p>
-            <p className="text-slate-500">
+            <p className="font-medium text-evergreen">{item.name}</p>
+            <p className="text-sage">
               {item.flowerType ? `${item.flowerType} · ` : ''}
               {item.boxes ? `${item.boxes} boxes · ` : ''}
               {item.quantity} units · {supplierLookup.get(item.supplierId ?? '') ?? 'Unassigned supplier'}
             </p>
-            {item.date && <p className="text-xs text-slate-400">Date: {item.date}</p>}
+            {item.date && <p className="text-xs text-sage/70">Date: {item.date}</p>}
           </div>
-          <p className="font-medium text-slate-900">{formatCurrency(item.wholesaleCost * item.quantity)}</p>
+          <p className="font-medium text-evergreen">{formatCurrency(item.wholesaleCost * item.quantity)}</p>
         </li>
       ))}
     </ul>

@@ -68,7 +68,7 @@ export default function SupplierForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 rounded-lg bg-white p-6 shadow-sm">
+    <form onSubmit={handleSubmit} className="space-y-6 rounded-card border border-stone bg-white p-6 shadow-card">
       <div className="grid gap-6 sm:grid-cols-2">
         <InputField
           label="Supplier name"
@@ -87,12 +87,12 @@ export default function SupplierForm() {
           error={errors.location}
         />
       </div>
-      {formError && <p className="text-sm text-red-500">{formError}</p>}
+      {formError && <p className="text-sm font-medium text-[#B42318]">{formError}</p>}
       <div className="flex justify-end">
         <button
           type="submit"
           disabled={isDisabled}
-          className="inline-flex items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+          className="inline-flex items-center rounded-md bg-harvest px-5 py-2 text-sm font-semibold text-warm-white transition hover:bg-harvest-hover active:bg-harvest-active disabled:cursor-not-allowed disabled:bg-harvest/60"
         >
           {isSubmitting ? 'Saving...' : 'Add Supplier'}
         </button>

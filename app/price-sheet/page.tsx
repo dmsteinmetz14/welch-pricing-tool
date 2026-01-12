@@ -47,42 +47,42 @@ export default function PriceSheetPage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="space-y-2">
-          <h1 className="text-3xl font-semibold text-slate-900">Price Sheet</h1>
-          <p className="text-base text-slate-600">A clean, read-only sheet you can share or export for wholesale partners.</p>
+          <h1 className="text-4xl font-semibold text-evergreen sm:text-5xl">Price Sheet</h1>
+          <p className="text-base text-sage">A clean, read-only sheet you can share or export for wholesale partners.</p>
         </div>
         <button
           type="button"
           onClick={handlePrint}
-          className="inline-flex items-center rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-50"
+          className="inline-flex items-center rounded-md border border-evergreen px-4 py-2 text-sm font-semibold text-evergreen transition hover:bg-sage/20"
         >
           Print / Export
         </button>
       </div>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <label className="flex w-full flex-col gap-2 text-sm text-slate-600">
+      <section className="rounded-card border border-stone bg-white p-6 shadow-card">
+        <label className="flex w-full flex-col gap-2 text-sm text-moss">
           Search by flower or type
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="e.g. Rose or Greens"
-            className="rounded-md border border-slate-300 px-3 py-2 text-base text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            className="rounded-md border border-stone bg-white px-3 py-2 text-base text-charcoal shadow-sm transition focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
           />
         </label>
       </section>
 
       {grouped.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-slate-200 bg-white p-6 text-sm text-slate-500">No flowers to display yet.</p>
+        <p className="rounded-card border border-dashed border-stone bg-white p-6 text-sm text-sage">No flowers to display yet.</p>
       ) : (
         <div className="space-y-6">
           {grouped.map((group) => (
-            <section key={group.type} className="rounded-lg border border-slate-200 bg-white shadow-sm">
-              <header className="border-b border-slate-100 px-4 py-3">
-                <h2 className="text-lg font-semibold text-slate-900">{group.type}</h2>
+            <section key={group.type} className="rounded-card border border-stone bg-white shadow-card">
+              <header className="border-b border-stone px-4 py-3">
+                <h2 className="text-2xl font-semibold text-evergreen">{group.type}</h2>
               </header>
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <table className="min-w-full divide-y divide-stone text-sm text-sage">
+                <thead className="bg-warm-white text-left text-xs font-semibold uppercase tracking-wide text-moss">
                   <tr>
                     <th className="px-4 py-3">Flower Type</th>
                     <th className="px-4 py-3">Flower</th>
@@ -90,15 +90,15 @@ export default function PriceSheetPage() {
                     <th className="px-4 py-3 text-right">Retail / Unit</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200 bg-white text-slate-700">
+                <tbody className="divide-y divide-stone bg-white text-sage">
                   {group.rows.map((row) => (
                     <tr key={row.id}>
-                      <td className="px-4 py-3 text-xs uppercase tracking-wide text-slate-500">{row.type || '—'}</td>
+                      <td className="px-4 py-3 text-xs uppercase tracking-wide text-sage/80">{row.type || '—'}</td>
                       <td className="px-4 py-3">
-                        <p className="font-medium text-slate-900">{row.name}</p>
+                        <p className="font-medium text-evergreen">{row.name}</p>
                       </td>
                       <td className="px-4 py-3 text-right">{row.quantity}</td>
-                      <td className="px-4 py-3 text-right font-semibold text-slate-900">{formatCurrency(row.retailPerUnit)}</td>
+                      <td className="px-4 py-3 text-right font-semibold text-evergreen">{formatCurrency(row.retailPerUnit)}</td>
                     </tr>
                   ))}
                 </tbody>

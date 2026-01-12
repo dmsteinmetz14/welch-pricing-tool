@@ -18,15 +18,15 @@ export default async function SuppliersPage() {
     <RestrictedContent featureLabel="Supplier Input">
       <div className="space-y-8">
         <div className="space-y-2">
-          <h1 className="text-3xl font-semibold text-slate-900">Capture supplier logistics</h1>
-          <p className="text-base text-slate-600">Track locations and any additional charges or fees tied to each supplier.</p>
+          <h1 className="text-4xl font-semibold text-evergreen sm:text-5xl">Capture supplier logistics</h1>
+          <p className="text-base text-sage">Track locations and any additional charges or fees tied to each supplier.</p>
         </div>
         <section className="space-y-4">
-          <h2 className="text-xl font-semibold text-slate-900">Suppliers</h2>
+          <h2 className="text-2xl font-semibold text-evergreen">Suppliers</h2>
           <SupplierList initialSuppliers={initialSuppliers} />
         </section>
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold text-slate-900">Add a supplier</h2>
+          <h2 className="text-2xl font-semibold text-evergreen">Add a supplier</h2>
           <SupplierForm />
         </div>
       </div>

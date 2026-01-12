@@ -88,40 +88,40 @@ export default function SupplierChargeTable({ charges, showFilters = true }: Sup
     <div className="space-y-4">
       {showFilters && (
         <div className="flex flex-wrap items-end gap-4">
-          <label className="flex flex-col text-sm text-slate-600">
+          <label className="flex flex-col text-sm text-sage">
             Start date
             <input
               type="date"
               value={startDate}
               onChange={(event) => setStartDate(event.target.value)}
-              className="mt-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              className="mt-1 rounded-md border border-stone bg-white px-3 py-2 text-sm text-charcoal shadow-sm transition focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
             />
           </label>
-          <label className="flex flex-col text-sm text-slate-600">
+          <label className="flex flex-col text-sm text-sage">
             End date
             <input
               type="date"
               value={endDate}
               onChange={(event) => setEndDate(event.target.value)}
-              className="mt-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              className="mt-1 rounded-md border border-stone bg-white px-3 py-2 text-sm text-charcoal shadow-sm transition focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
             />
           </label>
           <button
             type="button"
             onClick={resetToThisWeek}
-            className="inline-flex h-10 items-center rounded-md border border-slate-300 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            className="inline-flex h-10 items-center rounded-md border border-evergreen px-4 text-sm font-semibold text-evergreen transition hover:bg-sage/20"
           >
             Reset to this week
           </button>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-sage">
             Showing {filteredCharges.length} of {charges.length} charges
           </p>
-          <label className="flex flex-col text-sm text-slate-600">
+          <label className="flex flex-col text-sm text-sage">
             Supplier
             <select
               value={supplierFilter}
               onChange={(event) => setSupplierFilter(event.target.value)}
-              className="mt-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              className="mt-1 rounded-md border border-stone bg-white px-3 py-2 text-sm text-charcoal shadow-sm transition focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
             >
               <option value="">All suppliers</option>
               {supplierOptions.map((supplier) => (
@@ -134,11 +134,11 @@ export default function SupplierChargeTable({ charges, showFilters = true }: Sup
         </div>
       )}
       {filteredCharges.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-slate-200 bg-white p-6 text-sm text-slate-500">No charges match the selected date range.</p>
+        <p className="rounded-card border border-dashed border-stone bg-white p-6 text-sm text-sage">No charges match the selected date range.</p>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <div className="overflow-x-auto rounded-card border border-stone bg-white shadow-card">
+          <table className="min-w-full divide-y divide-stone text-sm text-sage">
+            <thead className="bg-warm-white text-left text-xs font-semibold uppercase tracking-wide text-moss">
               <tr>
                 <th className="px-4 py-3">Charge Type</th>
                 <th className="px-4 py-3">Description</th>
@@ -148,17 +148,19 @@ export default function SupplierChargeTable({ charges, showFilters = true }: Sup
                 <th className="px-4 py-3">Date</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 bg-white text-slate-700">
+            <tbody className="divide-y divide-stone bg-white text-sage">
               {filteredCharges.map((charge) => (
                 <tr key={charge.id}>
-                  <td className="px-4 py-3 font-medium text-slate-900">{charge.chargeType || '—'}</td>
+                  <td className="px-4 py-3 font-medium text-evergreen">{charge.chargeType || '—'}</td>
                   <td className="px-4 py-3">{charge.description || '—'}</td>
                   <td className="px-4 py-3">{charge.supplierName || 'Unassigned'}</td>
-                  <td className="px-4 py-3 text-right font-medium text-slate-900">{formatCurrency(charge.amount ?? 0)}</td>
+                  <td className="px-4 py-3 text-right font-medium text-evergreen">{formatCurrency(charge.amount ?? 0)}</td>
                   <td className="px-4 py-3">
                     {charge.unitOfCharge || 'Per Box'}
                     {(charge.unitOfCharge || 'Per Box') === 'Per Box' && (
-                      <span className="text-slate-500">{` — ${charge.boxCount ? `${charge.boxCount} box${charge.boxCount === 1 ? '' : 'es'}` : 'All boxes'}`}</span>
+                      <span className="text-sage">{` — ${
+                        charge.boxCount ? `${charge.boxCount} box${charge.boxCount === 1 ? '' : 'es'}` : 'All boxes'
+                      }`}</span>
                     )}
                   </td>
                   <td className="px-4 py-3">{formatChargeDate(charge.date)}</td>

@@ -178,16 +178,16 @@ export default function SupplierChargeForm({ suppliers, onSaved, lockedSupplier 
   );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 rounded-lg bg-white p-6 shadow-sm">
+    <form onSubmit={handleSubmit} className="space-y-6 rounded-card border border-stone bg-white p-6 shadow-card">
       <div className="grid gap-6 md:grid-cols-3">
         {lockedSupplier ? null : (
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-700">Supplier</span>
+          <label className="flex flex-col gap-2 text-sm">
+            <span className="font-medium text-moss">Supplier</span>
             <select
               value={fields.supplierId}
               onChange={(event) => setFields((prev) => ({ ...prev, supplierId: event.target.value }))}
-              className={`rounded-md border border-slate-300 px-3 py-2 text-base text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 ${
-                errors.supplierId ? 'border-red-400 focus:ring-red-200' : ''
+              className={`rounded-md border border-stone bg-white px-3 py-2 text-base text-charcoal shadow-sm transition focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60 ${
+                errors.supplierId ? 'border-[#C7563D] focus:ring-[#F2B8A4]' : ''
               }`}
             >
               <option value="">Select a supplier</option>
@@ -197,7 +197,7 @@ export default function SupplierChargeForm({ suppliers, onSaved, lockedSupplier 
                 </option>
               ))}
             </select>
-            {errors.supplierId && <span className="text-xs text-red-500">{errors.supplierId}</span>}
+            {errors.supplierId && <span className="text-xs font-medium text-[#B42318]">{errors.supplierId}</span>}
           </label>
         )}
         <InputField
@@ -208,8 +208,8 @@ export default function SupplierChargeForm({ suppliers, onSaved, lockedSupplier 
           onChange={(event) => setFields((prev) => ({ ...prev, chargeType: event.target.value }))}
           error={errors.chargeType}
         />
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="font-medium text-slate-700">Unit of charge</span>
+        <label className="flex flex-col gap-2 text-sm">
+          <span className="font-medium text-moss">Unit of charge</span>
           <select
             value={fields.unitOfCharge}
             onChange={(event) =>
@@ -222,20 +222,20 @@ export default function SupplierChargeForm({ suppliers, onSaved, lockedSupplier 
                 };
               })
             }
-            className={`rounded-md border border-slate-300 px-3 py-2 text-base text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 ${
-              errors.unitOfCharge ? 'border-red-400 focus:ring-red-200' : ''
+            className={`rounded-md border border-stone bg-white px-3 py-2 text-base text-charcoal shadow-sm transition focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60 ${
+              errors.unitOfCharge ? 'border-[#C7563D] focus:ring-[#F2B8A4]' : ''
             }`}
           >
             <option value="Per Box">Per Box</option>
             <option value="Per Shipment">Per Shipment</option>
           </select>
-          {errors.unitOfCharge && <span className="text-xs text-red-500">{errors.unitOfCharge}</span>}
+          {errors.unitOfCharge && <span className="text-xs font-medium text-[#B42318]">{errors.unitOfCharge}</span>}
         </label>
       </div>
       {fields.unitOfCharge === 'Per Box' && (
-        <div className="space-y-3 rounded-lg border border-slate-200 p-4">
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-700">Number of boxes</span>
+        <div className="space-y-3 rounded-lg border border-stone bg-warm-white p-4">
+          <label className="flex flex-col gap-2 text-sm">
+            <span className="font-medium text-moss">Number of boxes</span>
             <select
               value={fields.boxCountMode}
               onChange={(event) =>
@@ -244,7 +244,7 @@ export default function SupplierChargeForm({ suppliers, onSaved, lockedSupplier 
                   boxCountMode: event.target.value === 'custom' ? 'custom' : 'all'
                 }))
               }
-              className="rounded-md border border-slate-300 px-3 py-2 text-base text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              className="rounded-md border border-stone bg-white px-3 py-2 text-base text-charcoal shadow-sm transition focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
             >
               <option value="all">All boxes</option>
               <option value="custom">Specific number</option>
@@ -263,23 +263,23 @@ export default function SupplierChargeForm({ suppliers, onSaved, lockedSupplier 
               error={errors.boxCount}
             />
           ) : (
-            <p className="text-xs text-slate-500">Default: the charge applies to every box in the shipment.</p>
+            <p className="text-xs text-sage">Default: the charge applies to every box in the shipment.</p>
           )}
         </div>
       )}
-      <label className="flex flex-col gap-1 text-sm">
-        <span className="font-medium text-slate-700">Charge description</span>
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="font-medium text-moss">Charge description</span>
         <textarea
           name="description"
           placeholder="(Optional)"
           value={fields.description}
           onChange={(event) => setFields((prev) => ({ ...prev, description: event.target.value }))}
-          className={`rounded-md border border-slate-300 px-3 py-2 text-base text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 ${
-            errors.description ? 'border-red-400 focus:ring-red-200' : ''
+          className={`rounded-md border border-stone bg-white px-3 py-2 text-base text-charcoal shadow-sm transition focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60 ${
+            errors.description ? 'border-[#C7563D] focus:ring-[#F2B8A4]' : ''
           }`}
           rows={3}
         />
-        {errors.description && <span className="text-xs text-red-500">{errors.description}</span>}
+        {errors.description && <span className="text-xs font-medium text-[#B42318]">{errors.description}</span>}
       </label>
       <div className="grid gap-6 md:grid-cols-2">
         <InputField
@@ -302,12 +302,12 @@ export default function SupplierChargeForm({ suppliers, onSaved, lockedSupplier 
           error={errors.date}
         />
       </div>
-      {formError && <p className="text-sm text-red-500">{formError}</p>}
+      {formError && <p className="text-sm font-medium text-[#B42318]">{formError}</p>}
       <div className="flex justify-end">
         <button
           type="submit"
           disabled={isDisabled}
-          className="inline-flex items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+          className="inline-flex items-center rounded-md bg-harvest px-5 py-2 text-sm font-semibold text-warm-white transition hover:bg-harvest-hover active:bg-harvest-active disabled:cursor-not-allowed disabled:bg-harvest/60"
         >
           {isPending ? 'Saving...' : 'Add supplier charge'}
         </button>
