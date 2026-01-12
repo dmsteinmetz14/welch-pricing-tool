@@ -9,7 +9,8 @@ const links: { href: Route; label: string }[] = [
   { href: '/input', label: 'Flower Input' },
   { href: '/suppliers', label: 'Supplier Input' },
   { href: '/pricing', label: 'Pricing' },
-  { href: '/price-sheet', label: 'Price Sheet' }
+  { href: '/price-sheet', label: 'Price Sheet' },
+  { href: '/standing-orders', label: 'Standing Orders' }
 ];
 
 export default function HeaderNav() {
@@ -19,7 +20,7 @@ export default function HeaderNav() {
   return (
     <header className="border-b border-stone bg-evergreen text-warm-white">
       <div className="mx-auto flex max-w-[76rem] flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-10">
-        <p className="font-serif text-2xl font-semibold tracking-tight text-warm-white">Welch Wholesale</p>
+        <p className="font-serif text-2xl font-semibold tracking-tight text-warm-white">Welch Wholesale Florist</p>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
           <nav className="flex flex-wrap gap-2 text-sm font-medium text-warm-white/80 sm:gap-3">
             {links.map((link) => {
