@@ -42,40 +42,40 @@ function PricingPageContent() {
   return (
     <div className="space-y-8">
       <div className="space-y-2">
-        <h1 className="text-3xl font-semibold text-slate-900">Pricing</h1>
-        <p className="text-base text-slate-600">Adjust markups to see how retail totals change before sharing with customers.</p>
+        <h1 className="text-4xl font-semibold text-evergreen sm:text-5xl">Pricing</h1>
+        <p className="text-base text-sage">Adjust markups to see how retail totals change before sharing with customers.</p>
       </div>
 
-      <section className="rounded-lg bg-white p-6 shadow-sm">
+      <section className="rounded-card border border-stone bg-white p-6 shadow-card">
         <div className="space-y-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Select date</p>
-            <h2 className="text-lg font-semibold text-slate-900">Filter pricing by week</h2>
-            <p className="text-sm text-slate-600">Choose the week you want to review. Defaults to the current week.</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-moss">Select date</p>
+            <h2 className="text-2xl font-semibold text-evergreen">Filter pricing by week</h2>
+            <p className="text-sm text-sage">Choose the week you want to review. Defaults to the current week.</p>
           </div>
-          <div className="flex flex-wrap gap-4 text-sm text-slate-700">
-            <label className="flex flex-col gap-1">
+          <div className="flex flex-wrap gap-4 text-sm text-moss">
+            <label className="flex flex-col gap-2">
               Week start
               <input
                 type="date"
                 value={weekStart}
                 onChange={(event) => setWeekStart(event.target.value)}
-                className="rounded-md border border-slate-300 px-3 py-2 text-base text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                className="rounded-md border border-stone bg-white px-3 py-2 text-base text-charcoal shadow-sm transition focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
               />
             </label>
-            <label className="flex flex-col gap-1">
+            <label className="flex flex-col gap-2">
               Week end
               <input
                 type="date"
                 value={weekEnd}
                 onChange={(event) => setWeekEnd(event.target.value)}
-                className="rounded-md border border-slate-300 px-3 py-2 text-base text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                className="rounded-md border border-stone bg-white px-3 py-2 text-base text-charcoal shadow-sm transition focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
               />
             </label>
             <button
               type="button"
               onClick={handleResetDates}
-              className="self-end rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+              className="self-end rounded-md border border-evergreen px-4 py-2 text-sm font-semibold text-evergreen transition hover:bg-sage/20"
             >
               Reset to this week
             </button>
@@ -83,18 +83,18 @@ function PricingPageContent() {
         </div>
       </section>
 
-      <section className="rounded-lg bg-white p-6 shadow-sm">
+      <section className="rounded-card border border-stone bg-white p-6 shadow-card">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Overall markup</h2>
-            <p className="text-sm text-slate-500">Enter a percentage and optionally cascade it to every flower.</p>
+            <h2 className="text-2xl font-semibold text-evergreen">Overall markup</h2>
+            <p className="text-sm text-sage">Enter a percentage and optionally cascade it to every flower.</p>
           </div>
-          <div className="flex flex-col items-end gap-2 text-sm">
+          <div className="flex flex-col items-end gap-2 text-sm text-moss">
             <label className="flex items-center gap-2">
-              <span className="text-slate-600">Markup %</span>
+              <span>Markup %</span>
               <input
                 type="number"
-                className="w-28 rounded-md border border-slate-300 px-3 py-2 text-right text-sm"
+                className="w-32 rounded-md border border-stone bg-white px-3 py-2 text-right text-sm text-charcoal focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
                 value={markup}
                 min={0}
                 step={1}
@@ -112,7 +112,7 @@ function PricingPageContent() {
               type="button"
               onClick={applyMarkupToAll}
               disabled={!pricedItems.length}
-              className="inline-flex items-center rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:text-slate-400"
+              className="inline-flex items-center rounded-md border border-evergreen px-3 py-1 text-xs font-semibold text-evergreen transition hover:bg-sage/20 disabled:cursor-not-allowed disabled:border-stone disabled:text-sage"
             >
               Apply
             </button>

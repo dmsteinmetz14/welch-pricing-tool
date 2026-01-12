@@ -18,7 +18,7 @@ interface PriceTableProps {
 
 export default function PriceTable({ items, totals, overallMarkup, itemMarkups, onMarkupChange, onResetMarkup }: PriceTableProps) {
   if (!items.length) {
-    return <p className="text-sm text-slate-500">No flowers priced yet. Add them on the input tab.</p>;
+    return <p className="text-sm text-sage">No flowers priced yet. Add them on the input tab.</p>;
   }
 
   const sortedItems = [...items].sort((a, b) => {
@@ -30,9 +30,9 @@ export default function PriceTable({ items, totals, overallMarkup, itemMarkups, 
   });
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
-      <table className="min-w-full divide-y divide-slate-200 text-sm">
-        <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+    <div className="overflow-x-auto rounded-card border border-stone bg-white shadow-card">
+      <table className="min-w-full divide-y divide-stone text-sm text-sage">
+        <thead className="bg-warm-white text-left text-xs font-semibold uppercase tracking-wide text-moss">
           <tr>
             <th className="px-4 py-3">Type</th>
             <th className="px-4 py-3">Flower</th>
@@ -42,7 +42,7 @@ export default function PriceTable({ items, totals, overallMarkup, itemMarkups, 
             <th className="px-4 py-3">Retail / Unit</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-200 bg-white text-slate-700">
+        <tbody className="divide-y divide-stone bg-white text-sage">
           {sortedItems.map((item) => {
             const override = itemMarkups[item.id];
             const markupValue = override ?? item.appliedMarkup ?? overallMarkup;
@@ -52,11 +52,11 @@ export default function PriceTable({ items, totals, overallMarkup, itemMarkups, 
             return (
               <tr key={item.id}>
                 <td className="px-4 py-3">
-                  <p className="text-xs uppercase tracking-wide text-slate-400">{item.flowerType || '—'}</p>
+                  <p className="text-xs uppercase tracking-wide text-sage/80">{item.flowerType || '—'}</p>
                 </td>
                 <td className="px-4 py-3">
-                  <p className="font-medium text-slate-900">{item.name}</p>
-                  <p className="text-slate-500">
+                  <p className="font-medium text-evergreen">{item.name}</p>
+                  <p className="text-sage">
                     {item.boxes ? `${item.boxes} boxes · ` : ''}
                     {item.quantity} units
                   </p>
@@ -78,12 +78,12 @@ export default function PriceTable({ items, totals, overallMarkup, itemMarkups, 
                         onMarkupChange(item.id, parsed);
                       }
                     }}
-                    className="w-20 rounded-md border border-slate-300 px-2 py-1 text-right text-sm"
+                    className="w-24 rounded-md border border-stone bg-white px-2 py-1 text-right text-sm text-charcoal focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
                   />
                 </td>
                 <td className="px-4 py-3">{formatCurrency(item.baseWholesaleCost)}</td>
                 <td className="px-4 py-3">{formatCurrency(wholesaleWithChargePerUnit)}</td>
-                <td className="px-4 py-3 font-medium text-slate-900">{formatCurrency(retailPerUnit)}</td>
+                <td className="px-4 py-3 font-medium text-evergreen">{formatCurrency(retailPerUnit)}</td>
               </tr>
             );
           })}
