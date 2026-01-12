@@ -14,21 +14,39 @@ interface LinkRowValue {
 interface StandingOrderRow {
   id: number;
   Name?: string;
+  'Standing Order Name'?: string;
   Supplier?: LinkRowValue[];
   'Standing Order Lines'?: LinkRowValue[];
+  'Standing Orders Lines'?: LinkRowValue[];
   'Last modified'?: string;
   'Created on'?: string;
+  [key: string]: unknown;
 }
 
 interface StandingOrderLineRow {
   id: number;
   'Standing Order'?: LinkRowValue[];
+  'Standing Orders'?: LinkRowValue[];
   'Flower Type'?: string;
   'Flower Name'?: string;
   Units?: number | string;
   Boxes?: number | string | null;
   Cost?: number | string | null;
+  [key: string]: unknown;
 }
+
+interface BaserowFieldMetadata {
+  id: number;
+  name: string;
+  type: string;
+  primary: boolean;
+  link_row_table_id?: number;
+}
+
+let standingOrderNameField: string | null =
+  process.env.BASEROW_STANDING_ORDER_NAME_FIELD?.trim() || null;
+let standingOrderLineLinkField: string | null =
+  process.env.BASEROW_STANDING_ORDER_LINES_LINK_FIELD?.trim() || null;
 
 function getStandingOrdersTableId() {
   const tableId = process.env.BASEROW_STANDING_ORDERS_TABLE_ID;
@@ -62,6 +80,62 @@ function getStandingOrderLineRowPath(rowId: number | string) {
   return `/api/database/rows/table/${getStandingOrderLinesTableId()}/${rowId}/?user_field_names=true`;
 }
 
+function getStandingOrdersFieldsPath() {
+  return `/api/database/fields/table/${getStandingOrdersTableId()}/`;
+}
+
+function getStandingOrderLinesFieldsPath() {
+  return `/api/database/fields/table/${getStandingOrderLinesTableId()}/`;
+}
+
+function readStandingOrderName(row: StandingOrderRow) {
+  const candidates = standingOrderNameField ? [standingOrderNameField] : ['Name', 'Standing Order Name'];
+  for (const field of candidates) {
+    const raw = row[field];
+    if (typeof raw === 'string') {
+      const trimmed = raw.trim();
+      if (trimmed) {
+        return trimmed;
+      }
+    }
+  }
+  return '';
+}
+
+function readStandingOrderLink(row: StandingOrderLineRow) {
+  const candidates = standingOrderLineLinkField ? [standingOrderLineLinkField] : ['Standing Order', 'Standing Orders'];
+  for (const field of candidates) {
+    const value = row[field];
+    if (Array.isArray(value) && value.length) {
+      return value[0] as LinkRowValue;
+    }
+  }
+  return undefined;
+}
+
+async function ensureStandingOrderNameField() {
+  if (standingOrderNameField) {
+    return standingOrderNameField;
+  }
+  const fields = await baserowFetch<BaserowFieldMetadata[]>(getStandingOrdersFieldsPath());
+  const primary = fields.find((field) => field.primary);
+  standingOrderNameField = (primary?.name || 'Name').trim();
+  return standingOrderNameField;
+}
+
+async function ensureStandingOrderLineLinkField() {
+  if (standingOrderLineLinkField) {
+    return standingOrderLineLinkField;
+  }
+  const fields = await baserowFetch<BaserowFieldMetadata[]>(getStandingOrderLinesFieldsPath());
+  const standingOrdersTableId = Number(getStandingOrdersTableId());
+  const linkField = fields.find(
+    (field) => field.type === 'link_row' && Number(field.link_row_table_id) === standingOrdersTableId
+  );
+  standingOrderLineLinkField = (linkField?.name || 'Standing Order').trim();
+  return standingOrderLineLinkField;
+}
+
 export async function listStandingOrders(): Promise<StandingOrder[]> {
   const [ordersData, linesData] = await Promise.all([
     baserowFetch<BaserowListResponse<StandingOrderRow>>(getStandingOrdersCollectionPath()),
@@ -88,13 +162,15 @@ export async function createStandingOrder(payload: StandingOrderPayload): Promis
   if (!Number.isFinite(supplierNumeric)) {
     throw new Error('Invalid supplier id for standing order');
   }
+  const nameField = await ensureStandingOrderNameField();
+  const createBody: Record<string, unknown> = {
+    Supplier: [supplierNumeric]
+  };
+  createBody[nameField] = payload.name;
 
   const orderRow = await baserowFetch<StandingOrderRow>(getStandingOrdersCollectionPath(), {
     method: 'POST',
-    body: JSON.stringify({
-      Name: payload.name,
-      Supplier: [supplierNumeric]
-    })
+    body: JSON.stringify(createBody)
   });
 
   const createdLines = await Promise.all(payload.lines.map((line) => createStandingOrderLine(orderRow.id, line)));
@@ -112,13 +188,15 @@ export async function updateStandingOrder(orderId: string, payload: StandingOrde
   if (!Number.isFinite(supplierNumeric)) {
     throw new Error('Invalid supplier id for standing order');
   }
+  const nameField = await ensureStandingOrderNameField();
+  const updateBody: Record<string, unknown> = {
+    Supplier: [supplierNumeric]
+  };
+  updateBody[nameField] = payload.name;
 
   const orderRow = await baserowFetch<StandingOrderRow>(getStandingOrderRowPath(numericId), {
     method: 'PATCH',
-    body: JSON.stringify({
-      Name: payload.name,
-      Supplier: [supplierNumeric]
-    })
+    body: JSON.stringify(updateBody)
   });
 
   const existingLines = await listStandingOrderLines();
@@ -153,16 +231,18 @@ export async function listStandingOrderLines(): Promise<StandingOrderLine[]> {
 }
 
 async function createStandingOrderLine(standingOrderRowId: number, payload: StandingOrderLineInput): Promise<StandingOrderLine> {
+  const linkField = await ensureStandingOrderLineLinkField();
+  const lineBody: Record<string, unknown> = {
+    'Flower Type': payload.flowerType,
+    'Flower Name': payload.name,
+    Units: payload.quantity,
+    Boxes: payload.boxes,
+    Cost: payload.wholesaleCost
+  };
+  lineBody[linkField] = [standingOrderRowId];
   const row = await baserowFetch<StandingOrderLineRow>(getStandingOrderLinesCollectionPath(), {
     method: 'POST',
-    body: JSON.stringify({
-      'Standing Order': [standingOrderRowId],
-      'Flower Type': payload.flowerType,
-      'Flower Name': payload.name,
-      Units: payload.quantity,
-      Boxes: payload.boxes,
-      Cost: payload.wholesaleCost
-    })
+    body: JSON.stringify(lineBody)
   });
   const mapped = mapLineRow(row);
   if (mapped) {
@@ -192,7 +272,7 @@ function mapStandingOrderRow(row: StandingOrderRow, linesByOrder: Map<string, St
   const id = String(row.id);
   return {
     id,
-    name: row.Name?.trim() ?? '',
+    name: readStandingOrderName(row),
     supplierId: supplier ? String(supplier.id) : '',
     supplierName: supplier?.value?.trim(),
     lines: linesByOrder.get(id) ?? [],
@@ -202,7 +282,7 @@ function mapStandingOrderRow(row: StandingOrderRow, linesByOrder: Map<string, St
 }
 
 function mapLineRow(row: StandingOrderLineRow): StandingOrderLine | null {
-  const orderLink = Array.isArray(row['Standing Order']) ? row['Standing Order'][0] : undefined;
+  const orderLink = readStandingOrderLink(row);
   if (!orderLink) {
     return null;
   }
