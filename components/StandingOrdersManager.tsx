@@ -367,63 +367,63 @@ export default function StandingOrdersManager() {
                     <div className="overflow-x-auto">
                       <table className="min-w-full text-sm">
                         <thead>
-                          <tr className="text-left text-xs uppercase tracking-wide text-sage">
-                            <th className="px-3 py-2">Flower type</th>
-                            <th className="px-3 py-2">Flower name</th>
-                            <th className="px-3 py-2">Units</th>
-                            <th className="px-3 py-2">Boxes</th>
-                            <th className="px-3 py-2">Wholesale cost</th>
+                          <tr className="text-center text-xs uppercase tracking-wide text-sage">
+                            <th className="px-3 py-2 text-center">Flower type</th>
+                            <th className="px-3 py-2 text-center">Flower name</th>
+                            <th className="px-3 py-2 text-center">Units</th>
+                            <th className="px-3 py-2 text-center">Boxes</th>
+                            <th className="px-3 py-2 text-center">Wholesale cost</th>
                             <th className="px-3 py-2" aria-hidden="true" />
                           </tr>
                         </thead>
                         <tbody>
                           {currentEditing.lines.map((line) => (
                             <tr key={line.key} className="border-t border-stone/50">
-                              <td className="px-3 py-2">
+                              <td className="px-3 py-2 text-center">
                                 <input
                                   type="text"
                                   value={line.flowerType}
                                   onChange={(event) => handleEditFieldChange(line.key, 'flowerType', event.target.value)}
-                                  className="w-full rounded-md border border-stone bg-white px-3 py-2 text-sm text-charcoal focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
+                                  className="w-full rounded-md border border-stone bg-white px-3 py-2 text-sm text-center text-charcoal focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
                                 />
                               </td>
-                              <td className="px-3 py-2">
+                              <td className="px-3 py-2 text-center">
                                 <input
                                   type="text"
                                   value={line.name}
                                   onChange={(event) => handleEditFieldChange(line.key, 'name', event.target.value)}
-                                  className="w-full rounded-md border border-stone bg-white px-3 py-2 text-sm text-charcoal focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
+                                  className="w-full rounded-md border border-stone bg-white px-3 py-2 text-sm text-center text-charcoal focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
                                 />
                               </td>
-                              <td className="px-3 py-2">
+                              <td className="px-3 py-2 text-center">
                                 <input
                                   type="number"
                                   min="0"
                                   value={line.quantity}
                                   onChange={(event) => handleEditFieldChange(line.key, 'quantity', event.target.value)}
-                                  className="w-24 rounded-md border border-stone bg-white px-3 py-2 text-right text-sm text-charcoal focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
+                                  className="w-24 rounded-md border border-stone bg-white px-3 py-2 text-center text-sm text-charcoal focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
                                 />
                               </td>
-                              <td className="px-3 py-2">
+                              <td className="px-3 py-2 text-center">
                                 <input
                                   type="number"
                                   min="0"
                                   value={line.boxes}
                                   onChange={(event) => handleEditFieldChange(line.key, 'boxes', event.target.value)}
-                                  className="w-24 rounded-md border border-stone bg-white px-3 py-2 text-right text-sm text-charcoal focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
+                                  className="w-24 rounded-md border border-stone bg-white px-3 py-2 text-center text-sm text-charcoal focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
                                 />
                               </td>
-                              <td className="px-3 py-2">
+                              <td className="px-3 py-2 text-center">
                                 <input
                                   type="number"
                                   min="0"
                                   step="0.01"
                                   value={line.wholesaleCost}
                                   onChange={(event) => handleEditFieldChange(line.key, 'wholesaleCost', event.target.value)}
-                                  className="w-28 rounded-md border border-stone bg-white px-3 py-2 text-right text-sm text-charcoal focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
+                                  className="w-28 rounded-md border border-stone bg-white px-3 py-2 text-center text-sm text-charcoal focus:border-evergreen focus:ring-2 focus:ring-olive-tint/60"
                                 />
                               </td>
-                              <td className="px-3 py-2 text-right">
+                              <td className="px-3 py-2 text-center">
                                 <button
                                   type="button"
                                   onClick={() => handleRemoveLine(line.key)}
@@ -449,22 +449,22 @@ export default function StandingOrdersManager() {
                   <div className="overflow-x-auto">
                     <table className="min-w-full text-sm">
                       <thead>
-                        <tr className="text-left text-xs uppercase tracking-wide text-sage">
-                          <th className="px-3 py-2">Flower type</th>
-                          <th className="px-3 py-2">Flower name</th>
-                          <th className="px-3 py-2">Units</th>
-                          <th className="px-3 py-2">Boxes</th>
-                          <th className="px-3 py-2">Wholesale cost</th>
+                        <tr className="text-center text-xs uppercase tracking-wide text-sage">
+                          <th className="px-3 py-2 text-center">Flower type</th>
+                          <th className="px-3 py-2 text-center">Flower name</th>
+                          <th className="px-3 py-2 text-center">Units</th>
+                          <th className="px-3 py-2 text-center">Boxes</th>
+                          <th className="px-3 py-2 text-center">Wholesale cost</th>
                         </tr>
                       </thead>
                       <tbody>
                         {order.lines.map((line) => (
                           <tr key={line.id} className="border-t border-stone/50">
-                            <td className="px-3 py-2 text-charcoal">{line.flowerType || '—'}</td>
-                            <td className="px-3 py-2 text-charcoal">{line.name || '—'}</td>
-                            <td className="px-3 py-2 text-right text-charcoal">{line.quantity ?? 0}</td>
-                            <td className="px-3 py-2 text-right text-charcoal">{line.boxes ?? 0}</td>
-                            <td className="px-3 py-2 text-right text-charcoal">
+                            <td className="px-3 py-2 text-center text-charcoal">{line.flowerType || '—'}</td>
+                            <td className="px-3 py-2 text-center text-charcoal">{line.name || '—'}</td>
+                            <td className="px-3 py-2 text-center text-charcoal">{line.quantity ?? 0}</td>
+                            <td className="px-3 py-2 text-center text-charcoal">{line.boxes ?? 0}</td>
+                            <td className="px-3 py-2 text-center text-charcoal">
                               {typeof line.wholesaleCost === 'number' ? `$${line.wholesaleCost.toFixed(2)}` : '$0.00'}
                             </td>
                           </tr>
